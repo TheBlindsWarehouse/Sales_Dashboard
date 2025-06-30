@@ -569,41 +569,110 @@
             const lines = csvText.split('\n').filter(line => line.trim());
             salesData = [];
             
-            // Process each line for QuickBooks format
-            let currentRep = '';
-            
-            for (let line of lines) {
-                const columns = line.split(',').map(col => col.trim().replace(/"/g, ''));
-                
-                // Check if this is a sales rep header
-                if (columns[0] && !columns[1] && !columns[0].includes('Total')) {
-                    currentRep = columns[0];
-                    continue;
+            // Find the header row with "Sales Rep,Transaction date,..."
+            let headerRowIndex = -1;
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].toLowerCase();
+                if (line.includes('sales rep') && line.includes('transaction date') && line.includes('amount')) {
+                    headerRowIndex = i;
+                    break;
                 }
+            }
+            
+            if (headerRowIndex === -1) {
+                throw new Error('Could not find data header row in CSV');
+            }
+            
+            console.log('Found header at line', headerRowIndex);
+            
+            // Process transaction rows (after header)
+            const transactions = [];
+            for (let i = headerRowIndex + 1; i < lines.length; i++) {
+                const line = lines[i];
+                if (!line.trim()) continue;
                 
-                // Skip headers and empty lines
-                if (!columns[1] || columns[1] === 'Transaction date' || !currentRep) continue;
+                // Parse CSV line handling quoted fields
+                const columns = [];
+                let currentField = '';
+                let inQuotes = false;
+                let chars = line.split('');
                 
-                // Process transaction data
-                if (columns[1] && columns[8] && !isNaN(parseFloat(columns[8]))) {
-                    const date = parseDate(columns[1]);
-                    const amount = parseFloat(columns[8]);
+                for (let j = 0; j < chars.length; j++) {
+                    const char = chars[j];
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        columns.push(currentField.trim());
+                        currentField = '';
+                    } else {
+                        currentField += char;
+                    }
+                }
+                columns.push(currentField.trim()); // Add last field
+                
+                // Validate we have enough columns and extract data
+                if (columns.length >= 9) {
+                    const salesRep = columns[0].replace(/"/g, '').trim();
+                    const transactionDate = columns[1].replace(/"/g, '').trim();
+                    const transactionType = columns[2].replace(/"/g, '').trim();
+                    const customer = columns[4] ? columns[4].replace(/"/g, '').trim() : 'Unknown';
+                    const amountStr = columns[8] ? columns[8].replace(/[£,"]/g, '').trim() : '0';
+                    const amount = parseFloat(amountStr);
                     
-                    if (date && amount > 0) {
-                        salesData.push({
-                            rep: currentRep,
-                            month: formatMonth(date),
-                            sales: amount,
-                            orders: 1,
-                            customer: columns[4] || 'Unknown',
-                            date: columns[1]
+                    // Only include valid invoice transactions with actual sales rep names
+                    if (salesRep && 
+                        salesRep !== 'Sales Rep' && 
+                        salesRep.length < 50 && // Exclude company names (too long)
+                        !salesRep.toLowerCase().includes('warehouse') &&
+                        !salesRep.toLowerCase().includes('blinds') &&
+                        transactionType === 'Invoice' && 
+                        transactionDate &&
+                        amount > 0) {
+                        
+                        transactions.push({
+                            rep: salesRep,
+                            date: transactionDate,
+                            customer: customer,
+                            amount: amount
                         });
                     }
                 }
             }
             
+            console.log('Processed', transactions.length, 'valid transactions');
+            console.log('Sample transactions:', transactions.slice(0, 5));
+            
             // Aggregate by rep and month
-            salesData = aggregateData(salesData);
+            const aggregated = {};
+            transactions.forEach(transaction => {
+                const date = parseDate(transaction.date);
+                if (date) {
+                    const monthKey = formatMonth(date);
+                    const key = `${transaction.rep}-${monthKey}`;
+                    
+                    if (!aggregated[key]) {
+                        aggregated[key] = {
+                            rep: transaction.rep,
+                            month: monthKey,
+                            sales: 0,
+                            orders: 0,
+                            customer: 'Various',
+                            date: transaction.date
+                        };
+                    }
+                    
+                    aggregated[key].sales += transaction.amount;
+                    aggregated[key].orders += 1;
+                }
+            });
+            
+            salesData = Object.values(aggregated);
+            console.log('Final aggregated data:', salesData);
+            
+            if (salesData.length === 0) {
+                throw new Error('No valid sales data found in CSV');
+            }
+            
             updateDashboard();
         }
 
