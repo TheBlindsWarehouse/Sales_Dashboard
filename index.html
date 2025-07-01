@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blinds Warehouse Sales Dashboard</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/papaparse/5.3.2/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
     <style>
         * {
@@ -422,6 +422,11 @@
         }
         
         function parseAndProcessData(csvData) {
+            // Check if Papa Parse is loaded
+            if (typeof Papa === 'undefined') {
+                throw new Error('Papa Parse library is not available. Please refresh the page and try again.');
+            }
+            
             // Skip header rows and parse CSV
             const lines = csvData.split('\n');
             const dataLines = lines.slice(4); // Skip first 4 header lines
@@ -780,6 +785,11 @@
             try {
                 document.getElementById('loading').style.display = 'block';
                 document.getElementById('error').style.display = 'none';
+                
+                // Check if Papa Parse is loaded
+                if (typeof Papa === 'undefined') {
+                    throw new Error('Papa Parse library failed to load');
+                }
                 
                 const response = await fetch('sales-data.csv');
                 if (!response.ok) {
