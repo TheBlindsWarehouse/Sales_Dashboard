@@ -453,8 +453,12 @@
                 row['Amount'] !== undefined
             );
             
-            // Add financial year info to processed data
-            const dataWithFY = processedData.map(row => {
+            const processedData = cleanData.map(row => {
+                let amount = row['Amount'];
+                if (typeof amount === 'string') {
+                    amount = parseFloat(amount.replace(/,/g, ''));
+                }
+                
                 const date = parseDate(row['Transaction date']);
                 return {
                     ...row,
@@ -465,6 +469,9 @@
                     FinancialYear: getFinancialYear(date)
                 };
             });
+            
+            // Add financial year info to processed data
+            const dataWithFY = processedData;
             
             // Get unique values
             const uniqueMonths = [...new Set(dataWithFY.map(row => row.MonthYear))].sort();
@@ -915,17 +922,14 @@
             const sampleData = {
                 summaryData: [
                     {"salesRep":"Adam Bell","month":"2025-05","financialYear":"FY24/25","totalSales":60,"orderCount":1,"avgOrderValue":60},
-                    {"salesRep":"Adam Bell","month":"2025-07","financialYear":"FY25/26","totalSales":1200,"orderCount":2,"avgOrderValue":600},
                     {"salesRep":"Michael Bell","month":"2025-03","financialYear":"FY24/25","totalSales":2427.5,"orderCount":4,"avgOrderValue":606.88},
                     {"salesRep":"Michael Bell","month":"2025-04","financialYear":"FY24/25","totalSales":9241.08,"orderCount":11,"avgOrderValue":840.1},
                     {"salesRep":"Michael Bell","month":"2025-05","financialYear":"FY24/25","totalSales":9462.5,"orderCount":12,"avgOrderValue":788.54},
                     {"salesRep":"Michael Bell","month":"2025-06","financialYear":"FY24/25","totalSales":21035.99,"orderCount":19,"avgOrderValue":1107.16},
-                    {"salesRep":"Michael Bell","month":"2025-07","financialYear":"FY25/26","totalSales":15000,"orderCount":18,"avgOrderValue":833.33},
                     {"salesRep":"Ria Wise","month":"2025-03","financialYear":"FY24/25","totalSales":13009.17,"orderCount":14,"avgOrderValue":929.23},
                     {"salesRep":"Ria Wise","month":"2025-04","financialYear":"FY24/25","totalSales":17413.32,"orderCount":18,"avgOrderValue":967.41},
                     {"salesRep":"Ria Wise","month":"2025-05","financialYear":"FY24/25","totalSales":15460.86,"orderCount":15,"avgOrderValue":1030.72},
-                    {"salesRep":"Ria Wise","month":"2025-06","financialYear":"FY24/25","totalSales":23631.65,"orderCount":21,"avgOrderValue":1125.32},
-                    {"salesRep":"Ria Wise","month":"2025-07","financialYear":"FY25/26","totalSales":18500,"orderCount":20,"avgOrderValue":925}
+                    {"salesRep":"Ria Wise","month":"2025-06","financialYear":"FY24/25","totalSales":23631.65,"orderCount":21,"avgOrderValue":1125.32}
                 ],
                 varianceData: [
                     {"salesRep":"Michael Bell","currentMonth":"2025-04","previousMonth":"2025-03","totalSalesVariance":6813.58,"orderCountVariance":7,"avgOrderValueVariance":233.22,"varianceDueToOrderCount":4248.16,"varianceDueToAvgOrderValue":2565.42},
@@ -937,7 +941,7 @@
                 ],
                 uniqueMonths: ["2025-03","2025-04","2025-05","2025-06"],
                 uniqueSalesReps: ["Adam Bell","Michael Bell","Ria Wise"],
-                uniqueFYs: ["FY24/25"]
+                uniqueFYs: ["FY24/25","FY25/26"]
             };
             
             displayDashboard(sampleData);
