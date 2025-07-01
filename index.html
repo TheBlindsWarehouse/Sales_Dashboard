@@ -327,6 +327,12 @@
                             </select>
                         </div>
                         <div class="filter-group">
+                            <label for="fyFilter">Financial Year:</label>
+                            <select id="fyFilter" onchange="onFYFilterChange()">
+                                <option value="">All Financial Years</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
                             <label for="monthFilter">Month:</label>
                             <select id="monthFilter" onchange="applyFilters()">
                                 <option value="">All Months</option>
@@ -447,31 +453,29 @@
                 row['Amount'] !== undefined
             );
             
-            const processedData = cleanData.map(row => {
-                let amount = row['Amount'];
-                if (typeof amount === 'string') {
-                    amount = parseFloat(amount.replace(/,/g, ''));
-                }
-                
+            // Add financial year info to processed data
+            const dataWithFY = processedData.map(row => {
                 const date = parseDate(row['Transaction date']);
                 return {
                     ...row,
                     Amount: amount,
                     Month: date.getMonth() + 1,
                     Year: date.getFullYear(),
-                    MonthYear: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+                    MonthYear: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`,
+                    FinancialYear: getFinancialYear(date)
                 };
             });
             
             // Get unique values
-            const uniqueMonths = [...new Set(processedData.map(row => row.MonthYear))].sort();
-            const uniqueSalesReps = [...new Set(processedData.map(row => row['Sales Rep']))].sort();
+            const uniqueMonths = [...new Set(dataWithFY.map(row => row.MonthYear))].sort();
+            const uniqueSalesReps = [...new Set(dataWithFY.map(row => row['Sales Rep']))].sort();
+            const uniqueFYs = [...new Set(dataWithFY.map(row => row.FinancialYear))].sort();
             
             // Calculate summary data
             const summaryData = [];
             uniqueSalesReps.forEach(rep => {
                 uniqueMonths.forEach(month => {
-                    const monthData = processedData.filter(row => 
+                    const monthData = dataWithFY.filter(row => 
                         row['Sales Rep'] === rep && row.MonthYear === month
                     );
                     
@@ -484,6 +488,7 @@
                         summaryData.push({
                             salesRep: rep,
                             month: month,
+                            financialYear: monthData[0].FinancialYear,
                             totalSales: Math.round(totalSales * 100) / 100,
                             orderCount: orderCount,
                             avgOrderValue: Math.round(avgOrderValue * 100) / 100
@@ -525,13 +530,45 @@
                 summaryData: summaryData,
                 varianceData: varianceData,
                 uniqueMonths: uniqueMonths,
-                uniqueSalesReps: uniqueSalesReps
+                uniqueSalesReps: uniqueSalesReps,
+                uniqueFYs: uniqueFYs
             };
         }
         
         function parseDate(dateStr) {
             const [day, month, year] = dateStr.split('/');
             return new Date(year, month - 1, day);
+        }
+        
+        function getFinancialYear(date) {
+            const year = date.getFullYear();
+            const month = date.getMonth(); // 0-based (0 = January)
+            
+            if (month >= 6) { // July onwards (month 6+)
+                return `FY${year.toString().slice(-2)}/${(year + 1).toString().slice(-2)}`;
+            } else { // January to June
+                return `FY${(year - 1).toString().slice(-2)}/${year.toString().slice(-2)}`;
+            }
+        }
+        
+        function isDateInFY(date, fy) {
+            if (!fy) return true; // No FY filter
+            
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            
+            // Extract years from FY string (e.g., "FY24/25" -> [2024, 2025])
+            const fyMatch = fy.match(/FY(\d{2})\/(\d{2})/);
+            if (!fyMatch) return true;
+            
+            const fyStartYear = 2000 + parseInt(fyMatch[1]);
+            const fyEndYear = 2000 + parseInt(fyMatch[2]);
+            
+            // Check if date falls within the financial year
+            if (year === fyStartYear && month >= 6) return true; // July onwards in start year
+            if (year === fyEndYear && month < 6) return true; // January to June in end year
+            
+            return false;
         }
         
         function formatMonth(monthStr) {
@@ -579,10 +616,24 @@
                 salesRepFilter.appendChild(option);
             });
             
-            // Populate month filter
+            // Populate financial year filter
+            const fyFilter = document.getElementById('fyFilter');
+            fyFilter.innerHTML = '<option value="">All Financial Years</option>';
+            data.uniqueFYs.forEach(fy => {
+                const option = document.createElement('option');
+                option.value = fy;
+                option.textContent = fy;
+                fyFilter.appendChild(option);
+            });
+            
+            // Populate month filter (initially all months)
+            populateMonthFilter(data.uniqueMonths);
+        }
+        
+        function populateMonthFilter(months) {
             const monthFilter = document.getElementById('monthFilter');
             monthFilter.innerHTML = '<option value="">All Months</option>';
-            data.uniqueMonths.forEach(month => {
+            months.forEach(month => {
                 const option = document.createElement('option');
                 option.value = month;
                 option.textContent = formatMonth(month);
@@ -590,8 +641,30 @@
             });
         }
         
+        function onFYFilterChange() {
+            const fyFilter = document.getElementById('fyFilter').value;
+            
+            // Get months that belong to selected FY
+            let availableMonths = dashboardData.uniqueMonths;
+            
+            if (fyFilter) {
+                availableMonths = dashboardData.summaryData
+                    .filter(item => item.financialYear === fyFilter)
+                    .map(item => item.month);
+                availableMonths = [...new Set(availableMonths)].sort();
+            }
+            
+            // Update month dropdown
+            populateMonthFilter(availableMonths);
+            
+            // Clear month selection and apply filters
+            document.getElementById('monthFilter').value = '';
+            applyFilters();
+        }
+        
         function applyFilters() {
             const salesRepFilter = document.getElementById('salesRepFilter').value;
+            const fyFilter = document.getElementById('fyFilter').value;
             const monthFilter = document.getElementById('monthFilter').value;
             
             // Filter summary data
@@ -599,6 +672,10 @@
             
             if (salesRepFilter) {
                 filteredSummaryData = filteredSummaryData.filter(item => item.salesRep === salesRepFilter);
+            }
+            
+            if (fyFilter) {
+                filteredSummaryData = filteredSummaryData.filter(item => item.financialYear === fyFilter);
             }
             
             if (monthFilter) {
@@ -612,6 +689,15 @@
                 filteredVarianceData = filteredVarianceData.filter(item => item.salesRep === salesRepFilter);
             }
             
+            if (fyFilter) {
+                // For variance data, both current and previous month should be in the same FY
+                filteredVarianceData = filteredVarianceData.filter(item => {
+                    const currentDate = new Date(item.currentMonth + '-01');
+                    const previousDate = new Date(item.previousMonth + '-01');
+                    return isDateInFY(currentDate, fyFilter) && isDateInFY(previousDate, fyFilter);
+                });
+            }
+            
             if (monthFilter) {
                 // For variance data, filter by current month
                 filteredVarianceData = filteredVarianceData.filter(item => item.currentMonth === monthFilter);
@@ -621,12 +707,15 @@
             filteredData = {
                 summaryData: filteredSummaryData,
                 varianceData: filteredVarianceData,
-                uniqueMonths: salesRepFilter ? 
+                uniqueMonths: salesRepFilter || fyFilter ? 
                     [...new Set(filteredSummaryData.map(item => item.month))].sort() : 
                     dashboardData.uniqueMonths,
-                uniqueSalesReps: monthFilter ? 
+                uniqueSalesReps: monthFilter || fyFilter ? 
                     [...new Set(filteredSummaryData.map(item => item.salesRep))].sort() : 
-                    dashboardData.uniqueSalesReps
+                    dashboardData.uniqueSalesReps,
+                uniqueFYs: salesRepFilter || monthFilter ?
+                    [...new Set(filteredSummaryData.map(item => item.financialYear))].sort() :
+                    dashboardData.uniqueFYs
             };
             
             // Update display
@@ -635,7 +724,12 @@
         
         function clearFilters() {
             document.getElementById('salesRepFilter').value = '';
+            document.getElementById('fyFilter').value = '';
             document.getElementById('monthFilter').value = '';
+            
+            // Reset month filter to show all months
+            populateMonthFilter(dashboardData.uniqueMonths);
+            
             filteredData = dashboardData;
             updateFilteredDisplay();
         }
@@ -649,15 +743,17 @@
             
             // Add filter info if filters are applied
             const salesRepFilter = document.getElementById('salesRepFilter').value;
+            const fyFilter = document.getElementById('fyFilter').value;
             const monthFilter = document.getElementById('monthFilter').value;
             
-            if (salesRepFilter || monthFilter) {
+            if (salesRepFilter || fyFilter || monthFilter) {
                 const filterInfo = document.createElement('div');
                 filterInfo.className = 'filtered-info';
                 let filterText = 'Filtered by: ';
                 const filters = [];
                 
                 if (salesRepFilter) filters.push(`Sales Rep: ${salesRepFilter}`);
+                if (fyFilter) filters.push(`Financial Year: ${fyFilter}`);
                 if (monthFilter) filters.push(`Month: ${formatMonth(monthFilter)}`);
                 
                 filterInfo.textContent = filterText + filters.join(', ');
@@ -694,9 +790,7 @@
             const cards = [
                 { title: 'Total Sales', value: formatCurrency(totalSales) },
                 { title: 'Total Orders', value: totalOrders.toLocaleString() },
-                { title: 'Average Order Value', value: formatCurrency(avgOrderValueOverall) },
-                { title: 'Active Sales Reps', value: activeReps },
-                { title: 'Months Tracked', value: monthsTracked }
+                { title: 'Average Order Value', value: formatCurrency(avgOrderValueOverall) }
             ];
             
             cards.forEach(card => {
@@ -820,15 +914,18 @@
         function showSampleData() {
             const sampleData = {
                 summaryData: [
-                    {"salesRep":"Adam Bell","month":"2025-05","totalSales":60,"orderCount":1,"avgOrderValue":60},
-                    {"salesRep":"Michael Bell","month":"2025-03","totalSales":2427.5,"orderCount":4,"avgOrderValue":606.88},
-                    {"salesRep":"Michael Bell","month":"2025-04","totalSales":9241.08,"orderCount":11,"avgOrderValue":840.1},
-                    {"salesRep":"Michael Bell","month":"2025-05","totalSales":9462.5,"orderCount":12,"avgOrderValue":788.54},
-                    {"salesRep":"Michael Bell","month":"2025-06","totalSales":21035.99,"orderCount":19,"avgOrderValue":1107.16},
-                    {"salesRep":"Ria Wise","month":"2025-03","totalSales":13009.17,"orderCount":14,"avgOrderValue":929.23},
-                    {"salesRep":"Ria Wise","month":"2025-04","totalSales":17413.32,"orderCount":18,"avgOrderValue":967.41},
-                    {"salesRep":"Ria Wise","month":"2025-05","totalSales":15460.86,"orderCount":15,"avgOrderValue":1030.72},
-                    {"salesRep":"Ria Wise","month":"2025-06","totalSales":23631.65,"orderCount":21,"avgOrderValue":1125.32}
+                    {"salesRep":"Adam Bell","month":"2025-05","financialYear":"FY24/25","totalSales":60,"orderCount":1,"avgOrderValue":60},
+                    {"salesRep":"Adam Bell","month":"2025-07","financialYear":"FY25/26","totalSales":1200,"orderCount":2,"avgOrderValue":600},
+                    {"salesRep":"Michael Bell","month":"2025-03","financialYear":"FY24/25","totalSales":2427.5,"orderCount":4,"avgOrderValue":606.88},
+                    {"salesRep":"Michael Bell","month":"2025-04","financialYear":"FY24/25","totalSales":9241.08,"orderCount":11,"avgOrderValue":840.1},
+                    {"salesRep":"Michael Bell","month":"2025-05","financialYear":"FY24/25","totalSales":9462.5,"orderCount":12,"avgOrderValue":788.54},
+                    {"salesRep":"Michael Bell","month":"2025-06","financialYear":"FY24/25","totalSales":21035.99,"orderCount":19,"avgOrderValue":1107.16},
+                    {"salesRep":"Michael Bell","month":"2025-07","financialYear":"FY25/26","totalSales":15000,"orderCount":18,"avgOrderValue":833.33},
+                    {"salesRep":"Ria Wise","month":"2025-03","financialYear":"FY24/25","totalSales":13009.17,"orderCount":14,"avgOrderValue":929.23},
+                    {"salesRep":"Ria Wise","month":"2025-04","financialYear":"FY24/25","totalSales":17413.32,"orderCount":18,"avgOrderValue":967.41},
+                    {"salesRep":"Ria Wise","month":"2025-05","financialYear":"FY24/25","totalSales":15460.86,"orderCount":15,"avgOrderValue":1030.72},
+                    {"salesRep":"Ria Wise","month":"2025-06","financialYear":"FY24/25","totalSales":23631.65,"orderCount":21,"avgOrderValue":1125.32},
+                    {"salesRep":"Ria Wise","month":"2025-07","financialYear":"FY25/26","totalSales":18500,"orderCount":20,"avgOrderValue":925}
                 ],
                 varianceData: [
                     {"salesRep":"Michael Bell","currentMonth":"2025-04","previousMonth":"2025-03","totalSalesVariance":6813.58,"orderCountVariance":7,"avgOrderValueVariance":233.22,"varianceDueToOrderCount":4248.16,"varianceDueToAvgOrderValue":2565.42},
@@ -839,7 +936,8 @@
                     {"salesRep":"Ria Wise","currentMonth":"2025-06","previousMonth":"2025-05","totalSalesVariance":8170.79,"orderCountVariance":6,"avgOrderValueVariance":94.6,"varianceDueToOrderCount":6184.32,"varianceDueToAvgOrderValue":1986.6}
                 ],
                 uniqueMonths: ["2025-03","2025-04","2025-05","2025-06"],
-                uniqueSalesReps: ["Adam Bell","Michael Bell","Ria Wise"]
+                uniqueSalesReps: ["Adam Bell","Michael Bell","Ria Wise"],
+                uniqueFYs: ["FY24/25"]
             };
             
             displayDashboard(sampleData);
