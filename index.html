@@ -942,10 +942,11 @@
             // Calculate months elapsed and remaining in target period
             const startDate = new Date(targetPeriodStart + '-01');
             const endDate = new Date(targetPeriodEnd + '-01');
-            const currentDate = new Date(currentMonthYear + '-01');
+            const actualCurrentDate = new Date(); // Use actual current date, not month filter
             
             let monthsElapsed = 0;
             let totalMonths = 0;
+            let monthsRemaining = 0;
             
             // Calculate total months in period
             let tempDate = new Date(startDate);
@@ -954,16 +955,41 @@
                 tempDate.setMonth(tempDate.getMonth() + 1);
             }
             
-            // Calculate months elapsed
-            if (currentDate >= startDate) {
+            // Calculate actual time elapsed and remaining
+            if (actualCurrentDate >= startDate && actualCurrentDate <= endDate) {
+                // We're within the target period - calculate fractional months
+                const currentMonth = actualCurrentDate.getMonth();
+                const currentYear = actualCurrentDate.getFullYear();
+                const currentDay = actualCurrentDate.getDate();
+                
+                // Count complete months elapsed
                 tempDate = new Date(startDate);
-                while (tempDate <= currentDate && tempDate <= endDate) {
-                    monthsElapsed++;
+                while (tempDate.getFullYear() < currentYear || 
+                       (tempDate.getFullYear() === currentYear && tempDate.getMonth() < currentMonth)) {
+                    if (tempDate <= endDate) {
+                        monthsElapsed++;
+                    }
                     tempDate.setMonth(tempDate.getMonth() + 1);
                 }
+                
+                // Add fraction of current month elapsed
+                const daysInCurrentMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+                const fractionOfCurrentMonthElapsed = (currentDay - 1) / daysInCurrentMonth; // -1 because day 1 = start of month
+                monthsElapsed += fractionOfCurrentMonthElapsed;
+                
+                // Calculate remaining time
+                monthsRemaining = Math.max(0, totalMonths - monthsElapsed);
+                
+            } else if (actualCurrentDate < startDate) {
+                // Target period hasn't started yet
+                monthsElapsed = 0;
+                monthsRemaining = totalMonths;
+            } else {
+                // Target period has ended
+                monthsElapsed = totalMonths;
+                monthsRemaining = 0;
             }
             
-            const monthsRemaining = Math.max(0, totalMonths - monthsElapsed);
             const progressPercentage = totalMonths > 0 ? (monthsElapsed / totalMonths) * 100 : 0;
             
             // Calculate cumulative sales for each rep in target period
