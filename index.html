@@ -346,6 +346,134 @@
             font-size: 0.85em;
         }
         
+        /* Target Progress Styles */
+        .targets-container {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .target-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #667eea;
+        }
+        
+        .target-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .target-header h3 {
+            color: #333;
+            margin: 0;
+            font-size: 1.2em;
+        }
+        
+        .target-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .target-status.on-track {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .target-status.behind {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .target-status.ahead {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .target-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .target-metric {
+            text-align: center;
+        }
+        
+        .target-metric .label {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .target-metric .value {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .target-metric .value.positive {
+            color: #28a745;
+        }
+        
+        .target-metric .value.negative {
+            color: #dc3545;
+        }
+        
+        .progress-bar-container {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            transition: width 0.5s ease;
+            position: relative;
+        }
+        
+        .progress-bar.behind {
+            background: linear-gradient(90deg, #dc3545, #e74c3c);
+        }
+        
+        .progress-bar.ahead {
+            background: linear-gradient(90deg, #007bff, #0056b3);
+        }
+        
+        .progress-text {
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .team-summary {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .team-summary h4 {
+            color: #333;
+            margin: 0 0 15px 0;
+            font-size: 1.1em;
+        }
+        
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -433,6 +561,12 @@
                     <div class="summary-cards" id="summaryCards"></div>
                 </div>
                 
+                <!-- Half-Year Targets Progress -->
+                <div class="section">
+                    <h2>Half-Year Target Progress (July - December 2025)</h2>
+                    <div id="targetsProgress"></div>
+                </div>
+                
                 <!-- Sales Performance Table -->
                 <div class="section">
                     <h2>Monthly Sales Performance by Rep</h2>
@@ -515,6 +649,29 @@
         let dashboardData = null;
         let filteredData = null;
         let rawTransactionData = []; // Store original transaction data for drill-down
+        
+        // Half-year targets (July - December 2025)
+        const halfYearTargets = {
+            "Michael Bell": 90000,
+            "Ria Wise": 132000,
+            period: "July - December 2025",
+            startMonth: "2025-07",
+            endMonth: "2025-12"
+        };
+        
+        // Get current date and calculate defaults
+        function getCurrentDefaults() {
+            const now = new Date();
+            const currentMonth = now.getMonth() + 1; // 1-based month
+            const currentYear = now.getFullYear();
+            const currentMonthYear = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
+            const currentFY = getFinancialYear(now);
+            
+            return {
+                currentMonthYear: currentMonthYear,
+                currentFY: currentFY
+            };
+        }
         
         function parseAndProcessData(csvData) {
             // Check if Papa Parse is loaded
@@ -774,6 +931,209 @@
             }
         });
         
+        function calculateTargetProgress(summaryData) {
+            const targetPeriodStart = halfYearTargets.startMonth;
+            const targetPeriodEnd = halfYearTargets.endMonth;
+            
+            // Get current date info
+            const now = new Date();
+            const currentMonthYear = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            
+            // Calculate months elapsed and remaining in target period
+            const startDate = new Date(targetPeriodStart + '-01');
+            const endDate = new Date(targetPeriodEnd + '-01');
+            const currentDate = new Date(currentMonthYear + '-01');
+            
+            let monthsElapsed = 0;
+            let totalMonths = 0;
+            
+            // Calculate total months in period
+            let tempDate = new Date(startDate);
+            while (tempDate <= endDate) {
+                totalMonths++;
+                tempDate.setMonth(tempDate.getMonth() + 1);
+            }
+            
+            // Calculate months elapsed
+            if (currentDate >= startDate) {
+                tempDate = new Date(startDate);
+                while (tempDate <= currentDate && tempDate <= endDate) {
+                    monthsElapsed++;
+                    tempDate.setMonth(tempDate.getMonth() + 1);
+                }
+            }
+            
+            const monthsRemaining = Math.max(0, totalMonths - monthsElapsed);
+            const progressPercentage = totalMonths > 0 ? (monthsElapsed / totalMonths) * 100 : 0;
+            
+            // Calculate cumulative sales for each rep in target period
+            const targetProgress = {};
+            
+            Object.keys(halfYearTargets).forEach(salesRep => {
+                if (salesRep === 'period' || salesRep === 'startMonth' || salesRep === 'endMonth') return;
+                
+                const target = halfYearTargets[salesRep];
+                const repData = summaryData.filter(item => 
+                    item.salesRep === salesRep && 
+                    item.month >= targetPeriodStart && 
+                    item.month <= targetPeriodEnd
+                );
+                
+                const actualSales = _.sumBy(repData, 'totalSales');
+                const progressPercent = target > 0 ? (actualSales / target) * 100 : 0;
+                const remaining = Math.max(0, target - actualSales);
+                const requiredMonthlyAvg = monthsRemaining > 0 ? remaining / monthsRemaining : 0;
+                
+                // Determine status
+                let status = 'on-track';
+                if (progressPercent > progressPercentage + 5) {
+                    status = 'ahead';
+                } else if (progressPercent < progressPercentage - 10) {
+                    status = 'behind';
+                }
+                
+                targetProgress[salesRep] = {
+                    target: target,
+                    actual: actualSales,
+                    progressPercent: Math.round(progressPercent * 10) / 10,
+                    remaining: remaining,
+                    requiredMonthlyAvg: requiredMonthlyAvg,
+                    status: status,
+                    monthsElapsed: monthsElapsed,
+                    monthsRemaining: monthsRemaining,
+                    timeProgressPercent: Math.round(progressPercentage * 10) / 10
+                };
+            });
+            
+            // Calculate team totals
+            const totalTarget = Object.keys(halfYearTargets)
+                .filter(key => key !== 'period' && key !== 'startMonth' && key !== 'endMonth')
+                .reduce((sum, rep) => sum + halfYearTargets[rep], 0);
+            
+            const totalActual = Object.values(targetProgress)
+                .reduce((sum, rep) => sum + rep.actual, 0);
+            
+            const totalProgressPercent = totalTarget > 0 ? (totalActual / totalTarget) * 100 : 0;
+            const totalRemaining = Math.max(0, totalTarget - totalActual);
+            const totalRequiredMonthlyAvg = monthsRemaining > 0 ? totalRemaining / monthsRemaining : 0;
+            
+            let teamStatus = 'on-track';
+            if (totalProgressPercent > progressPercentage + 5) {
+                teamStatus = 'ahead';
+            } else if (totalProgressPercent < progressPercentage - 10) {
+                teamStatus = 'behind';
+            }
+            
+            return {
+                individual: targetProgress,
+                team: {
+                    target: totalTarget,
+                    actual: totalActual,
+                    progressPercent: Math.round(totalProgressPercent * 10) / 10,
+                    remaining: totalRemaining,
+                    requiredMonthlyAvg: totalRequiredMonthlyAvg,
+                    status: teamStatus,
+                    monthsElapsed: monthsElapsed,
+                    monthsRemaining: monthsRemaining,
+                    timeProgressPercent: Math.round(progressPercentage * 10) / 10
+                }
+            };
+        }
+        
+        function displayTargetProgress(targetProgress) {
+            const container = document.getElementById('targetsProgress');
+            container.innerHTML = '';
+            
+            // Check current sales rep filter
+            const selectedSalesRep = document.getElementById('salesRepFilter').value;
+            
+            if (selectedSalesRep && selectedSalesRep !== '') {
+                // Show only the selected sales rep's progress
+                if (targetProgress.individual[selectedSalesRep]) {
+                    const rep = targetProgress.individual[selectedSalesRep];
+                    
+                    const card = document.createElement('div');
+                    card.className = 'target-card';
+                    card.innerHTML = `
+                        <div class="target-header">
+                            <h3>${selectedSalesRep}</h3>
+                            <span class="target-status ${rep.status}">${rep.status.replace('-', ' ')}</span>
+                        </div>
+                        
+                        <div class="target-metrics">
+                            <div class="target-metric">
+                                <div class="label">Target</div>
+                                <div class="value">${formatCurrency(rep.target)}</div>
+                            </div>
+                            <div class="target-metric">
+                                <div class="label">Actual</div>
+                                <div class="value">${formatCurrency(rep.actual)}</div>
+                            </div>
+                            <div class="target-metric">
+                                <div class="label">Progress</div>
+                                <div class="value">${rep.progressPercent}%</div>
+                            </div>
+                            <div class="target-metric">
+                                <div class="label">Remaining</div>
+                                <div class="value ${rep.remaining > 0 ? 'negative' : 'positive'}">${formatCurrency(rep.remaining)}</div>
+                            </div>
+                            <div class="target-metric">
+                                <div class="label">Required Monthly Avg</div>
+                                <div class="value">${formatCurrency(rep.requiredMonthlyAvg)}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-bar-container">
+                            <div class="progress-bar ${rep.status}" style="width: ${Math.min(rep.progressPercent, 100)}%"></div>
+                        </div>
+                        <div class="progress-text">
+                            ${rep.monthsElapsed} of 6 months elapsed (${rep.timeProgressPercent}% of time period)
+                        </div>
+                    `;
+                    
+                    container.appendChild(card);
+                }
+            } else {
+                // Show team summary when "All Sales Reps" is selected
+                const teamSummary = document.createElement('div');
+                teamSummary.className = 'team-summary';
+                teamSummary.innerHTML = `
+                    <h4>Team Performance Summary</h4>
+                    <div class="target-metrics">
+                        <div class="target-metric">
+                            <div class="label">Team Target</div>
+                            <div class="value">${formatCurrency(targetProgress.team.target)}</div>
+                        </div>
+                        <div class="target-metric">
+                            <div class="label">Team Actual</div>
+                            <div class="value">${formatCurrency(targetProgress.team.actual)}</div>
+                        </div>
+                        <div class="target-metric">
+                            <div class="label">Team Progress</div>
+                            <div class="value">${targetProgress.team.progressPercent}%</div>
+                        </div>
+                        <div class="target-metric">
+                            <div class="label">Team Remaining</div>
+                            <div class="value ${targetProgress.team.remaining > 0 ? 'negative' : 'positive'}">${formatCurrency(targetProgress.team.remaining)}</div>
+                        </div>
+                        <div class="target-metric">
+                            <div class="label">Required Monthly Avg</div>
+                            <div class="value">${formatCurrency(targetProgress.team.requiredMonthlyAvg)}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-bar-container">
+                        <div class="progress-bar ${targetProgress.team.status}" style="width: ${Math.min(targetProgress.team.progressPercent, 100)}%"></div>
+                    </div>
+                    <div class="progress-text">
+                        Overall Status: <strong style="text-transform: capitalize;">${targetProgress.team.status.replace('-', ' ')}</strong>
+                    </div>
+                `;
+                
+                container.appendChild(teamSummary);
+            }
+        }
+        
         function displayDashboard(data) {
             dashboardData = data;
             filteredData = data; // Initialize filtered data
@@ -782,11 +1142,15 @@
             document.getElementById('loading').style.display = 'none';
             document.getElementById('dashboardResults').style.display = 'block';
             
-            // Populate filter dropdowns
+            // Populate filter dropdowns and set defaults
             populateFilters(data);
             
             // Create summary cards
             createSummaryCards(data);
+            
+            // Calculate and display target progress
+            const targetProgress = calculateTargetProgress(data.summaryData);
+            displayTargetProgress(targetProgress);
             
             // Populate performance table
             populatePerformanceTable(data.summaryData);
@@ -796,6 +1160,8 @@
         }
         
         function populateFilters(data) {
+            const defaults = getCurrentDefaults();
+            
             // Populate sales rep filter
             const salesRepFilter = document.getElementById('salesRepFilter');
             salesRepFilter.innerHTML = '<option value="">All Sales Reps</option>';
@@ -806,29 +1172,55 @@
                 salesRepFilter.appendChild(option);
             });
             
-            // Populate financial year filter
+            // Populate financial year filter and set default to current FY
             const fyFilter = document.getElementById('fyFilter');
             fyFilter.innerHTML = '<option value="">All Financial Years</option>';
             data.uniqueFYs.forEach(fy => {
                 const option = document.createElement('option');
                 option.value = fy;
                 option.textContent = fy;
+                if (fy === defaults.currentFY) {
+                    option.selected = true;
+                }
                 fyFilter.appendChild(option);
             });
             
-            // Populate month filter (initially all months)
-            populateMonthFilter(data.uniqueMonths);
+            // Set initial months based on current FY
+            let availableMonths = data.uniqueMonths;
+            if (defaults.currentFY && data.uniqueFYs.includes(defaults.currentFY)) {
+                availableMonths = data.summaryData
+                    .filter(item => item.financialYear === defaults.currentFY)
+                    .map(item => item.month);
+                availableMonths = [...new Set(availableMonths)].sort();
+            }
+            
+            // Populate month filter and set default to current month if available
+            populateMonthFilter(availableMonths, defaults.currentMonthYear);
+            
+            // Apply default filters
+            applyFilters();
         }
         
-        function populateMonthFilter(months) {
+        function populateMonthFilter(months, defaultMonth = null) {
             const monthFilter = document.getElementById('monthFilter');
             monthFilter.innerHTML = '<option value="">All Months</option>';
+            
+            let hasCurrentMonth = false;
             months.forEach(month => {
                 const option = document.createElement('option');
                 option.value = month;
                 option.textContent = formatMonth(month);
+                if (defaultMonth && month === defaultMonth) {
+                    option.selected = true;
+                    hasCurrentMonth = true;
+                }
                 monthFilter.appendChild(option);
             });
+            
+            // If current month is not available in the data, don't select anything
+            if (defaultMonth && !hasCurrentMonth) {
+                monthFilter.value = '';
+            }
         }
         
         function onFYFilterChange() {
@@ -844,11 +1236,10 @@
                 availableMonths = [...new Set(availableMonths)].sort();
             }
             
-            // Update month dropdown
+            // Update month dropdown - don't auto-select current month when FY changes
             populateMonthFilter(availableMonths);
             
-            // Clear month selection and apply filters
-            document.getElementById('monthFilter').value = '';
+            // Apply filters
             applyFilters();
         }
         
@@ -955,6 +1346,10 @@
             
             // Update summary cards
             createSummaryCards(filteredData);
+            
+            // Calculate and display target progress with filtered data
+            const targetProgress = calculateTargetProgress(filteredData.summaryData);
+            displayTargetProgress(targetProgress);
             
             // Update tables
             populatePerformanceTable(filteredData.summaryData);
@@ -1099,7 +1494,9 @@
         }
         
         function showSampleData() {
-            // Create sample raw transaction data for drill-down
+            const defaults = getCurrentDefaults();
+            
+            // Create sample raw transaction data for drill-down, including current month data
             rawTransactionData = [
                 {"Sales Rep":"Adam Bell","Transaction date":"15/05/2025","No.":"INV-001","Name":"Customer A","Amount":60,"Type":"Invoice","Month":5,"Year":2025,"MonthYear":"2025-05","FinancialYear":"FY24/25"},
                 {"Sales Rep":"Michael Bell","Transaction date":"10/03/2025","No.":"INV-002","Name":"Customer B","Amount":500,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
@@ -1107,7 +1504,14 @@
                 {"Sales Rep":"Michael Bell","Transaction date":"20/03/2025","No.":"INV-004","Name":"Customer D","Amount":650,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
                 {"Sales Rep":"Michael Bell","Transaction date":"25/03/2025","No.":"INV-005","Name":"Customer E","Amount":527.5,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
                 {"Sales Rep":"Ria Wise","Transaction date":"05/03/2025","No.":"INV-006","Name":"Customer F","Amount":1200,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
-                {"Sales Rep":"Ria Wise","Transaction date":"08/03/2025","No.":"INV-007","Name":"Customer G","Amount":850,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"}
+                {"Sales Rep":"Ria Wise","Transaction date":"08/03/2025","No.":"INV-007","Name":"Customer G","Amount":850,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
+                // July 2025 data (start of target period)
+                {"Sales Rep":"Michael Bell","Transaction date":"01/07/2025","No.":"INV-008","Name":"Customer H","Amount":12500,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
+                {"Sales Rep":"Michael Bell","Transaction date":"05/07/2025","No.":"INV-009","Name":"Customer I","Amount":8750,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
+                {"Sales Rep":"Michael Bell","Transaction date":"15/07/2025","No.":"INV-010","Name":"Customer J","Amount":6200,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
+                {"Sales Rep":"Ria Wise","Transaction date":"02/07/2025","No.":"INV-011","Name":"Customer K","Amount":18500,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
+                {"Sales Rep":"Ria Wise","Transaction date":"10/07/2025","No.":"INV-012","Name":"Customer L","Amount":14750,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
+                {"Sales Rep":"Ria Wise","Transaction date":"20/07/2025","No.":"INV-013","Name":"Customer M","Amount":11200,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"}
             ];
             
             const sampleData = {
@@ -1117,20 +1521,24 @@
                     {"salesRep":"Michael Bell","month":"2025-04","financialYear":"FY24/25","totalSales":9241.08,"orderCount":11,"avgOrderValue":840.1},
                     {"salesRep":"Michael Bell","month":"2025-05","financialYear":"FY24/25","totalSales":9462.5,"orderCount":12,"avgOrderValue":788.54},
                     {"salesRep":"Michael Bell","month":"2025-06","financialYear":"FY24/25","totalSales":21035.99,"orderCount":19,"avgOrderValue":1107.16},
+                    {"salesRep":"Michael Bell","month":"2025-07","financialYear":"FY25/26","totalSales":27450,"orderCount":3,"avgOrderValue":9150},
                     {"salesRep":"Ria Wise","month":"2025-03","financialYear":"FY24/25","totalSales":13009.17,"orderCount":14,"avgOrderValue":929.23},
                     {"salesRep":"Ria Wise","month":"2025-04","financialYear":"FY24/25","totalSales":17413.32,"orderCount":18,"avgOrderValue":967.41},
                     {"salesRep":"Ria Wise","month":"2025-05","financialYear":"FY24/25","totalSales":15460.86,"orderCount":15,"avgOrderValue":1030.72},
-                    {"salesRep":"Ria Wise","month":"2025-06","financialYear":"FY24/25","totalSales":23631.65,"orderCount":21,"avgOrderValue":1125.32}
+                    {"salesRep":"Ria Wise","month":"2025-06","financialYear":"FY24/25","totalSales":23631.65,"orderCount":21,"avgOrderValue":1125.32},
+                    {"salesRep":"Ria Wise","month":"2025-07","financialYear":"FY25/26","totalSales":44450,"orderCount":3,"avgOrderValue":14816.67}
                 ],
                 varianceData: [
                     {"salesRep":"Michael Bell","currentMonth":"2025-04","previousMonth":"2025-03","totalSalesVariance":6813.58,"orderCountVariance":7,"avgOrderValueVariance":233.22,"varianceDueToOrderCount":4248.16,"varianceDueToAvgOrderValue":2565.42},
                     {"salesRep":"Michael Bell","currentMonth":"2025-05","previousMonth":"2025-04","totalSalesVariance":221.42,"orderCountVariance":1,"avgOrderValueVariance":-51.56,"varianceDueToOrderCount":840.1,"varianceDueToAvgOrderValue":-618.72},
                     {"salesRep":"Michael Bell","currentMonth":"2025-06","previousMonth":"2025-05","totalSalesVariance":11573.49,"orderCountVariance":7,"avgOrderValueVariance":318.62,"varianceDueToOrderCount":5519.78,"varianceDueToAvgOrderValue":6053.78},
+                    {"salesRep":"Michael Bell","currentMonth":"2025-07","previousMonth":"2025-06","totalSalesVariance":6414.01,"orderCountVariance":-16,"avgOrderValueVariance":8042.84,"varianceDueToOrderCount":-17714.56,"varianceDueToAvgOrderValue":24128.52},
                     {"salesRep":"Ria Wise","currentMonth":"2025-04","previousMonth":"2025-03","totalSalesVariance":4404.15,"orderCountVariance":4,"avgOrderValueVariance":38.18,"varianceDueToOrderCount":3716.92,"varianceDueToAvgOrderValue":687.24},
                     {"salesRep":"Ria Wise","currentMonth":"2025-05","previousMonth":"2025-04","totalSalesVariance":-1952.46,"orderCountVariance":-3,"avgOrderValueVariance":63.31,"varianceDueToOrderCount":-2902.23,"varianceDueToAvgOrderValue":949.65},
-                    {"salesRep":"Ria Wise","currentMonth":"2025-06","previousMonth":"2025-05","totalSalesVariance":8170.79,"orderCountVariance":6,"avgOrderValueVariance":94.6,"varianceDueToOrderCount":6184.32,"varianceDueToAvgOrderValue":1986.6}
+                    {"salesRep":"Ria Wise","currentMonth":"2025-06","previousMonth":"2025-05","totalSalesVariance":8170.79,"orderCountVariance":6,"avgOrderValueVariance":94.6,"varianceDueToOrderCount":6184.32,"varianceDueToAvgOrderValue":1986.6},
+                    {"salesRep":"Ria Wise","currentMonth":"2025-07","previousMonth":"2025-06","totalSalesVariance":20818.35,"orderCountVariance":-18,"avgOrderValueVariance":13691.35,"varianceDueToOrderCount":-20255.76,"varianceDueToAvgOrderValue":41074.1}
                 ],
-                uniqueMonths: ["2025-03","2025-04","2025-05","2025-06"],
+                uniqueMonths: ["2025-03","2025-04","2025-05","2025-06","2025-07"],
                 uniqueSalesReps: ["Adam Bell","Michael Bell","Ria Wise"],
                 uniqueFYs: ["FY24/25","FY25/26"]
             };
