@@ -49,40 +49,6 @@
             padding: 30px;
         }
         
-        .file-upload {
-            background: #f8f9fa;
-            border: 2px dashed #dee2e6;
-            border-radius: 8px;
-            padding: 30px;
-            text-align: center;
-            margin-bottom: 30px;
-            transition: all 0.3s ease;
-        }
-        
-        .file-upload:hover {
-            border-color: #667eea;
-            background: #f0f4ff;
-        }
-        
-        .file-upload input {
-            display: none;
-        }
-        
-        .upload-btn {
-            background: #667eea;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s ease;
-        }
-        
-        .upload-btn:hover {
-            background: #5a67d8;
-        }
-        
         .section {
             margin-bottom: 40px;
         }
@@ -268,6 +234,129 @@
             border-left: 4px solid #2196f3;
         }
         
+        /* Clickable sales cells */
+        .clickable-sales {
+            cursor: pointer;
+            color: #667eea;
+            text-decoration: underline;
+            transition: all 0.2s ease;
+        }
+        
+        .clickable-sales:hover {
+            background-color: #f0f4ff !important;
+            color: #5a67d8;
+            font-weight: 600;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+        
+        .modal-body {
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+        
+        .close:hover {
+            opacity: 0.7;
+        }
+        
+        .order-summary {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .order-summary-item {
+            text-align: center;
+        }
+        
+        .order-summary-item .label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .order-summary-item .value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .orders-table {
+            margin-top: 20px;
+        }
+        
+        .orders-table table {
+            font-size: 0.9em;
+        }
+        
+        .orders-table th {
+            background: #f8f9fa;
+            color: #333;
+            font-size: 0.85em;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
             body {
                 padding: 10px;
             }
@@ -287,6 +376,11 @@
             th, td {
                 padding: 8px 10px;
             }
+            
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
         }
     </style>
 </head>
@@ -298,19 +392,8 @@
         </div>
         
         <div class="dashboard-content">
-            <div class="file-upload">
-                <h3>Upload Sales Data CSV</h3>
-                <p>Select your QuickBooks sales report CSV file</p>
-                <br>
-                <input type="file" id="csvFile" accept=".csv" />
-                <button class="upload-btn" onclick="document.getElementById('csvFile').click()">
-                    Choose File
-                </button>
-                <p id="fileName" style="margin-top: 10px; color: #666;"></p>
-            </div>
-            
             <div class="loading" id="loading">
-                <h3>Processing data...</h3>
+                <h3>Loading dashboard data...</h3>
             </div>
             
             <div class="error" id="error"></div>
@@ -353,6 +436,9 @@
                 <!-- Sales Performance Table -->
                 <div class="section">
                     <h2>Monthly Sales Performance by Rep</h2>
+                    <p style="color: #666; margin-bottom: 15px; font-style: italic;">
+                        💡 Click on any sales total to view individual orders
+                    </p>
                     <div class="table-container">
                         <table id="performanceTable">
                             <thead>
@@ -394,38 +480,41 @@
         </div>
     </div>
 
+    <!-- Order Details Modal -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Order Details</h2>
+                <span class="close" onclick="closeOrderModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="order-summary" id="orderSummary">
+                    <!-- Summary cards will be inserted here -->
+                </div>
+                <div class="orders-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Invoice No.</th>
+                                <th>Customer</th>
+                                <th class="number">Amount (£)</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orderDetailsBody">
+                            <!-- Order details will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let dashboardData = null;
         let filteredData = null;
-        
-        // File upload handler
-        document.getElementById('csvFile').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                document.getElementById('fileName').textContent = `Selected: ${file.name}`;
-                processCSVFile(file);
-            }
-        });
-        
-        function processCSVFile(file) {
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('error').style.display = 'none';
-            document.getElementById('dashboardResults').style.display = 'none';
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const csvData = e.target.result;
-                    const processedData = parseAndProcessData(csvData);
-                    displayDashboard(processedData);
-                } catch (error) {
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('error').style.display = 'block';
-                    document.getElementById('error').textContent = `Error processing file: ${error.message}`;
-                }
-            };
-            reader.readAsText(file);
-        }
+        let rawTransactionData = []; // Store original transaction data for drill-down
         
         function parseAndProcessData(csvData) {
             // Check if Papa Parse is loaded
@@ -469,6 +558,9 @@
                     FinancialYear: getFinancialYear(date)
                 };
             });
+            
+            // Store raw transaction data globally for drill-down
+            rawTransactionData = processedData;
             
             // Add financial year info to processed data
             const dataWithFY = processedData;
@@ -590,6 +682,97 @@
                 currency: 'GBP'
             }).format(amount);
         }
+        
+        function showOrderDetails(salesRep, month) {
+            // Filter raw data for the selected sales rep and month
+            const orderData = rawTransactionData.filter(row => 
+                row['Sales Rep'] === salesRep && row.MonthYear === month
+            );
+            
+            // Group by invoice number to get unique orders
+            const ordersByInvoice = _.groupBy(orderData, 'No.');
+            const orders = Object.keys(ordersByInvoice).map(invoiceNo => {
+                const invoiceItems = ordersByInvoice[invoiceNo];
+                const totalAmount = _.sumBy(invoiceItems, 'Amount');
+                const firstItem = invoiceItems[0];
+                
+                return {
+                    invoiceNo: invoiceNo,
+                    date: firstItem['Transaction date'],
+                    customer: firstItem['Name'] || 'N/A',
+                    amount: totalAmount,
+                    type: firstItem['Type'] || 'Invoice',
+                    items: invoiceItems
+                };
+            });
+            
+            // Sort orders by date
+            orders.sort((a, b) => parseDate(a.date) - parseDate(b.date));
+            
+            // Calculate summary
+            const totalSales = _.sumBy(orders, 'amount');
+            const orderCount = orders.length;
+            const avgOrderValue = totalSales / orderCount;
+            
+            // Update modal title
+            document.getElementById('modalTitle').textContent = 
+                `Orders: ${salesRep} - ${formatMonth(month)}`;
+            
+            // Create summary cards
+            const summaryContainer = document.getElementById('orderSummary');
+            summaryContainer.innerHTML = `
+                <div class="order-summary-item">
+                    <div class="label">Total Sales</div>
+                    <div class="value">${formatCurrency(totalSales)}</div>
+                </div>
+                <div class="order-summary-item">
+                    <div class="label">Number of Orders</div>
+                    <div class="value">${orderCount}</div>
+                </div>
+                <div class="order-summary-item">
+                    <div class="label">Average Order Value</div>
+                    <div class="value">${formatCurrency(avgOrderValue)}</div>
+                </div>
+            `;
+            
+            // Populate order details table
+            const tbody = document.getElementById('orderDetailsBody');
+            tbody.innerHTML = '';
+            
+            orders.forEach(order => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${order.date}</td>
+                    <td>${order.invoiceNo}</td>
+                    <td>${order.customer}</td>
+                    <td class="number">${formatCurrency(order.amount)}</td>
+                    <td>${order.type}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            // Show modal
+            document.getElementById('orderModal').style.display = 'block';
+        }
+        
+        function closeOrderModal() {
+            document.getElementById('orderModal').style.display = 'none';
+        }
+        
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('orderModal');
+            if (event.target === modal) {
+                closeOrderModal();
+            }
+        };
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeOrderModal();
+            }
+        });
         
         function displayDashboard(data) {
             dashboardData = data;
@@ -827,7 +1010,7 @@
                 tr.innerHTML = `
                     <td>${row.salesRep}</td>
                     <td>${formatMonth(row.month)}</td>
-                    <td class="number">${formatCurrency(row.totalSales)}</td>
+                    <td class="number clickable-sales" onclick="showOrderDetails('${row.salesRep}', '${row.month}')">${formatCurrency(row.totalSales)}</td>
                     <td class="number">${row.orderCount}</td>
                     <td class="number">${formatCurrency(row.avgOrderValue)}</td>
                 `;
@@ -900,9 +1083,6 @@
                 const processedData = parseAndProcessData(csvData);
                 displayDashboard(processedData);
                 
-                // Update file name display
-                document.getElementById('fileName').textContent = 'Loaded: sales-data.csv';
-                
             } catch (error) {
                 console.error('Error loading CSV file:', error);
                 document.getElementById('loading').style.display = 'none';
@@ -910,7 +1090,7 @@
                 document.getElementById('error').innerHTML = `
                     <strong>Could not load sales-data.csv automatically.</strong><br>
                     Error: ${error.message}<br>
-                    Please upload your CSV file manually using the file upload button above.
+                    Please ensure the sales-data.csv file exists in the same directory.
                 `;
                 
                 // Show fallback sample data
@@ -919,6 +1099,17 @@
         }
         
         function showSampleData() {
+            // Create sample raw transaction data for drill-down
+            rawTransactionData = [
+                {"Sales Rep":"Adam Bell","Transaction date":"15/05/2025","No.":"INV-001","Name":"Customer A","Amount":60,"Type":"Invoice","Month":5,"Year":2025,"MonthYear":"2025-05","FinancialYear":"FY24/25"},
+                {"Sales Rep":"Michael Bell","Transaction date":"10/03/2025","No.":"INV-002","Name":"Customer B","Amount":500,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
+                {"Sales Rep":"Michael Bell","Transaction date":"15/03/2025","No.":"INV-003","Name":"Customer C","Amount":750,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
+                {"Sales Rep":"Michael Bell","Transaction date":"20/03/2025","No.":"INV-004","Name":"Customer D","Amount":650,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
+                {"Sales Rep":"Michael Bell","Transaction date":"25/03/2025","No.":"INV-005","Name":"Customer E","Amount":527.5,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
+                {"Sales Rep":"Ria Wise","Transaction date":"05/03/2025","No.":"INV-006","Name":"Customer F","Amount":1200,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
+                {"Sales Rep":"Ria Wise","Transaction date":"08/03/2025","No.":"INV-007","Name":"Customer G","Amount":850,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"}
+            ];
+            
             const sampleData = {
                 summaryData: [
                     {"salesRep":"Adam Bell","month":"2025-05","financialYear":"FY24/25","totalSales":60,"orderCount":1,"avgOrderValue":60},
@@ -945,7 +1136,6 @@
             };
             
             displayDashboard(sampleData);
-            document.getElementById('fileName').textContent = 'Showing sample data (sales-data.csv not found)';
         }
     </script>
 </body>
