@@ -180,7 +180,7 @@
         
         .summary-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: 2fr 1fr 1fr;
             gap: 20px;
             margin-bottom: 30px;
         }
@@ -191,6 +191,31 @@
             padding: 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             border-left: 4px solid #667eea;
+        }
+        
+        .summary-card.total-sales {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-left: 4px solid #fff;
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .summary-card.total-sales h3 {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .summary-card.total-sales .value {
+            color: white;
+            font-size: 2.5em;
+        }
+        
+        .summary-card.secondary {
+            padding: 15px;
+        }
+        
+        .summary-card.secondary .value {
+            font-size: 1.6em;
         }
         
         .summary-card h3 {
@@ -575,6 +600,21 @@
             display: none;
         }
         
+        /* Current Period Heading Styling */
+        #currentPeriodHeading {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 20px 25px;
+            margin: 0 -30px 20px -30px;
+            border-radius: 0;
+            border: none;
+            font-size: 2.2em;
+            font-weight: 700;
+            text-align: center;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            letter-spacing: 0.5px;
+        }
+        
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -623,6 +663,24 @@
             .summary-cards {
                 grid-template-columns: 1fr;
                 gap: 15px;
+            }
+            
+            .summary-card.total-sales {
+                transform: none;
+            }
+            
+            .summary-card.total-sales .value {
+                font-size: 2em;
+            }
+            
+            .summary-card.secondary .value {
+                font-size: 1.4em;
+            }
+            
+            #currentPeriodHeading {
+                margin: 0 -15px 15px -15px;
+                font-size: 1.8em;
+                padding: 15px 20px;
             }
             
             .summary-card {
@@ -725,6 +783,11 @@
             
             .target-metrics {
                 grid-template-columns: 1fr;
+            }
+            
+            #currentPeriodHeading {
+                font-size: 1.5em;
+                padding: 12px 15px;
             }
             
             .modal-content {
@@ -1695,14 +1758,14 @@
             const monthsTracked = data.uniqueMonths.length;
             
             const cards = [
-                { title: 'Total Sales', value: formatCurrency(totalSales) },
-                { title: 'Total Orders', value: totalOrders.toLocaleString() },
-                { title: 'Average Order Value', value: formatCurrency(avgOrderValueOverall) }
+                { title: 'Total Sales', value: formatCurrency(totalSales), class: 'total-sales' },
+                { title: 'Total Orders', value: totalOrders.toLocaleString(), class: 'secondary' },
+                { title: 'Average Order Value', value: formatCurrency(avgOrderValueOverall), class: 'secondary' }
             ];
             
             cards.forEach(card => {
                 const cardDiv = document.createElement('div');
-                cardDiv.className = 'summary-card';
+                cardDiv.className = `summary-card ${card.class}`;
                 cardDiv.innerHTML = `
                     <h3>${card.title}</h3>
                     <div class="value">${card.value}</div>
