@@ -559,6 +559,11 @@
             font-size: 1.1em;
         }
         
+        /* Hidden section style */
+        .section.hidden {
+            display: none;
+        }
+        
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -793,7 +798,7 @@
                 </div>
                 
                 <!-- Half-Year Targets Progress -->
-                <div class="section">
+                <div class="section" id="targetProgressSection">
                     <h2>Half-Year Target Progress (July - December 2025)</h2>
                     <div id="targetsProgress"></div>
                 </div>
@@ -892,6 +897,16 @@
             startMonth: "2025-07",
             endMonth: "2025-12"
         };
+        
+        // Function to check if filtered data includes target period
+        function shouldShowTargetProgress(summaryData) {
+            const targetStartMonth = halfYearTargets.startMonth;
+            const targetEndMonth = halfYearTargets.endMonth;
+            
+            return summaryData.some(item => 
+                item.month >= targetStartMonth && item.month <= targetEndMonth
+            );
+        }
         
         // Tab switching function
         function switchTab(tabName) {
@@ -1422,20 +1437,8 @@
             document.getElementById('dashboardResults').style.display = 'block';
             
             // Populate filter dropdowns and set defaults
+            // This will automatically apply the filters and update the display
             populateFilters(data);
-            
-            // Create summary cards
-            createSummaryCards(data);
-            
-            // Calculate and display target progress
-            const targetProgress = calculateTargetProgress(data.summaryData);
-            displayTargetProgress(targetProgress);
-            
-            // Populate performance table
-            populatePerformanceTable(data.summaryData);
-            
-            // Populate variance table
-            populateVarianceTable(data.varianceData);
         }
         
         function populateFilters(data) {
@@ -1466,8 +1469,10 @@
             // Populate month filter and set default to current month if available
             populateMonthFilter(availableMonths, defaults.currentMonthYear);
             
-            // Apply default filters
-            applyFilters();
+            // Apply default filters after a short delay to ensure DOM is updated
+            setTimeout(() => {
+                applyFilters();
+            }, 100);
         }
         
         function populateMonthFilter(months, defaultMonth = null) {
@@ -1513,8 +1518,11 @@
         }
         
         function applyFilters() {
-            const fyFilter = document.getElementById('fyFilter').value;
-            const monthFilter = document.getElementById('monthFilter').value;
+            const fyFilter = document.getElementById('fyFilter');
+            const monthFilter = document.getElementById('monthFilter');
+            
+            const fyFilterValue = fyFilter ? fyFilter.value : '';
+            const monthFilterValue = monthFilter ? monthFilter.value : '';
             
             // Filter summary data
             let filteredSummaryData = dashboardData.summaryData;
@@ -1524,12 +1532,12 @@
                 filteredSummaryData = filteredSummaryData.filter(item => item.salesRep === currentTab);
             }
             
-            if (fyFilter) {
-                filteredSummaryData = filteredSummaryData.filter(item => item.financialYear === fyFilter);
+            if (fyFilterValue) {
+                filteredSummaryData = filteredSummaryData.filter(item => item.financialYear === fyFilterValue);
             }
             
-            if (monthFilter) {
-                filteredSummaryData = filteredSummaryData.filter(item => item.month === monthFilter);
+            if (monthFilterValue) {
+                filteredSummaryData = filteredSummaryData.filter(item => item.month === monthFilterValue);
             }
             
             // Filter variance data
@@ -1540,31 +1548,30 @@
                 filteredVarianceData = filteredVarianceData.filter(item => item.salesRep === currentTab);
             }
             
-            if (fyFilter) {
-                // For variance data, both current and previous month should be in the same FY
+            if (fyFilterValue) {
+                // For variance data, filter by current month's FY (previous month can be in different FY)
                 filteredVarianceData = filteredVarianceData.filter(item => {
                     const currentDate = new Date(item.currentMonth + '-01');
-                    const previousDate = new Date(item.previousMonth + '-01');
-                    return isDateInFY(currentDate, fyFilter) && isDateInFY(previousDate, fyFilter);
+                    return isDateInFY(currentDate, fyFilterValue);
                 });
             }
             
-            if (monthFilter) {
+            if (monthFilterValue) {
                 // For variance data, filter by current month
-                filteredVarianceData = filteredVarianceData.filter(item => item.currentMonth === monthFilter);
+                filteredVarianceData = filteredVarianceData.filter(item => item.currentMonth === monthFilterValue);
             }
             
             // Create filtered data object
             filteredData = {
                 summaryData: filteredSummaryData,
                 varianceData: filteredVarianceData,
-                uniqueMonths: fyFilter || currentTab !== 'team' ? 
+                uniqueMonths: fyFilterValue || currentTab !== 'team' ? 
                     [...new Set(filteredSummaryData.map(item => item.month))].sort() : 
                     dashboardData.uniqueMonths,
-                uniqueSalesReps: monthFilter || fyFilter ? 
+                uniqueSalesReps: monthFilterValue || fyFilterValue ? 
                     [...new Set(filteredSummaryData.map(item => item.salesRep))].sort() : 
                     dashboardData.uniqueSalesReps,
-                uniqueFYs: monthFilter || currentTab !== 'team' ?
+                uniqueFYs: monthFilterValue || currentTab !== 'team' ?
                     [...new Set(filteredSummaryData.map(item => item.financialYear))].sort() :
                     dashboardData.uniqueFYs
             };
@@ -1615,9 +1622,18 @@
             // Update summary cards
             createSummaryCards(filteredData);
             
-            // Calculate and display target progress with filtered data
-            const targetProgress = calculateTargetProgress(filteredData.summaryData);
-            displayTargetProgress(targetProgress);
+            // Check if we should show target progress based on filtered data
+            const showTargets = shouldShowTargetProgress(filteredData.summaryData);
+            const targetSection = document.getElementById('targetProgressSection');
+            
+            if (showTargets) {
+                targetSection.classList.remove('hidden');
+                // Calculate and display target progress with filtered data
+                const targetProgress = calculateTargetProgress(filteredData.summaryData);
+                displayTargetProgress(targetProgress);
+            } else {
+                targetSection.classList.add('hidden');
+            }
             
             // Update tables
             populatePerformanceTable(filteredData.summaryData);
