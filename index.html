@@ -1897,19 +1897,16 @@
                 filteredTransactions = filteredTransactions.filter(row => row.MonthYear === monthFilter);
             }
             
-            // Calculate discretionary discounts
+            // Calculate discretionary discounts - look in Product/Service column
             const discountTransactions = filteredTransactions.filter(row => 
-                row.Type && row.Type.toLowerCase().includes('discretionary discount') ||
-                row['Line Description'] && row['Line Description'].toLowerCase().includes('discretionary discount') ||
-                row.Amount < 0 && (row.Type === 'Credit Memo' || row.Type === 'Credit Note')
+                row['Product/Service'] && row['Product/Service'].toLowerCase().includes('discretionary discount')
             );
             
             const totalDiscounts = Math.abs(_.sumBy(discountTransactions, 'Amount'));
             
             // Calculate sales excluding discounts
             const salesTransactions = filteredTransactions.filter(row => 
-                !(row.Type && row.Type.toLowerCase().includes('discretionary discount')) &&
-                !(row['Line Description'] && row['Line Description'].toLowerCase().includes('discretionary discount')) &&
+                !(row['Product/Service'] && row['Product/Service'].toLowerCase().includes('discretionary discount')) &&
                 row.Amount > 0
             );
             
@@ -2533,19 +2530,19 @@
                 {"Sales Rep":"Michael Bell","Transaction date":"15/03/2025","No.":"INV-003","Name":"Customer C","Amount":750,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
                 {"Sales Rep":"Michael Bell","Transaction date":"20/03/2025","No.":"INV-004","Name":"Customer D","Amount":650,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
                 {"Sales Rep":"Michael Bell","Transaction date":"25/03/2025","No.":"INV-005","Name":"Customer E","Amount":527.5,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
-                {"Sales Rep":"Michael Bell","Transaction date":"26/03/2025","No.":"CM-001","Name":"Customer E","Amount":-27.5,"Type":"Credit Memo","Line Description":"Discretionary Discount","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
+                {"Sales Rep":"Michael Bell","Transaction date":"26/03/2025","No.":"CM-001","Name":"Customer E","Amount":-27.5,"Type":"Credit Memo","Product/Service":"Discretionary Discount","Line Description":"Discount applied","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
                 {"Sales Rep":"Ria Wise","Transaction date":"05/03/2025","No.":"INV-006","Name":"Customer F","Amount":1200,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
                 {"Sales Rep":"Ria Wise","Transaction date":"08/03/2025","No.":"INV-007","Name":"Customer G","Amount":850,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
-                {"Sales Rep":"Ria Wise","Transaction date":"09/03/2025","No.":"CM-002","Name":"Customer G","Amount":-50,"Type":"Credit Memo","Line Description":"Discretionary Discount","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
+                {"Sales Rep":"Ria Wise","Transaction date":"09/03/2025","No.":"CM-002","Name":"Customer G","Amount":-50,"Type":"Credit Memo","Product/Service":"Discretionary Discount","Line Description":"Volume discount","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
                 // July 2025 data (start of target period)
                 {"Sales Rep":"Michael Bell","Transaction date":"01/07/2025","No.":"INV-008","Name":"Customer H","Amount":12500,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
                 {"Sales Rep":"Michael Bell","Transaction date":"05/07/2025","No.":"INV-009","Name":"Customer I","Amount":8750,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
                 {"Sales Rep":"Michael Bell","Transaction date":"15/07/2025","No.":"INV-010","Name":"Customer J","Amount":6200,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
-                {"Sales Rep":"Michael Bell","Transaction date":"16/07/2025","No.":"CM-003","Name":"Customer J","Amount":-200,"Type":"Credit Memo","Line Description":"Discretionary Discount","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
+                {"Sales Rep":"Michael Bell","Transaction date":"16/07/2025","No.":"CM-003","Name":"Customer J","Amount":-200,"Type":"Credit Memo","Product/Service":"Discretionary Discount","Line Description":"Early payment discount","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
                 {"Sales Rep":"Ria Wise","Transaction date":"02/07/2025","No.":"INV-011","Name":"Customer K","Amount":18500,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
                 {"Sales Rep":"Ria Wise","Transaction date":"10/07/2025","No.":"INV-012","Name":"Customer L","Amount":14750,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
                 {"Sales Rep":"Ria Wise","Transaction date":"20/07/2025","No.":"INV-013","Name":"Customer M","Amount":11200,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
-                {"Sales Rep":"Ria Wise","Transaction date":"21/07/2025","No.":"CM-004","Name":"Customer M","Amount":-400,"Type":"Credit Memo","Line Description":"Discretionary Discount","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"}
+                {"Sales Rep":"Ria Wise","Transaction date":"21/07/2025","No.":"CM-004","Name":"Customer M","Amount":-400,"Type":"Credit Memo","Product/Service":"Discretionary Discount","Line Description":"Customer loyalty discount","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"}
             ];
             
             const sampleData = {
