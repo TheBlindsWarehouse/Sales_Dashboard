@@ -33,6 +33,24 @@
             color: white;
             padding: 20px;
             text-align: center;
+            position: relative;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .logo {
+            flex-shrink: 0;
+        }
+        
+        .header-text {
+            flex-grow: 1;
+            min-width: 300px;
         }
         
         .header h1 {
@@ -43,6 +61,40 @@
         .header p {
             font-size: 1.2em;
             opacity: 0.9;
+        }
+        
+        /* Tab Styles */
+        .tabs-container {
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 0 20px;
+            display: flex;
+            overflow-x: auto;
+        }
+        
+        .tab {
+            background: transparent;
+            border: none;
+            padding: 15px 25px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            min-width: fit-content;
+        }
+        
+        .tab:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+        
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: white;
         }
         
         .dashboard-content {
@@ -312,7 +364,7 @@
             border-radius: 6px;
             margin-bottom: 20px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
         }
         
@@ -526,21 +578,159 @@
                 padding: 15px;
             }
             
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .header-text {
+                min-width: auto;
+            }
+            
             .header h1 {
                 font-size: 2em;
             }
             
+            .header p {
+                font-size: 1em;
+            }
+            
+            .tabs-container {
+                padding: 0 10px;
+            }
+            
+            .tab {
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+            
+            .summary-cards {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .summary-card {
+                padding: 15px;
+            }
+            
+            .summary-card .value {
+                font-size: 1.5em;
+            }
+            
             table {
-                font-size: 0.9em;
+                font-size: 0.8em;
             }
             
             th, td {
-                padding: 8px 10px;
+                padding: 8px 6px;
             }
             
+            .filters-container {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .filter-group {
+                min-width: 100%;
+            }
+            
+            .target-metrics {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .target-metric .value {
+                font-size: 1em;
+            }
+            
+            .order-summary {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 12px;
+            }
+            
+            .order-summary-item .value {
+                font-size: 1.1em;
+            }
+            
+            /* Mobile Modal Improvements */
             .modal-content {
                 width: 95%;
                 margin: 5% auto;
+                max-height: 85vh;
+            }
+            
+            .modal-header {
+                padding: 15px;
+            }
+            
+            .modal-header h2 {
+                font-size: 1.2em;
+            }
+            
+            .modal-body {
+                padding: 15px;
+                max-height: 65vh;
+            }
+            
+            .orders-table table {
+                font-size: 0.75em;
+            }
+            
+            .orders-table th,
+            .orders-table td {
+                padding: 6px 4px;
+            }
+            
+            /* Hide less important columns on mobile */
+            .orders-table th:nth-child(4),
+            .orders-table td:nth-child(4),
+            .orders-table th:nth-child(5),
+            .orders-table td:nth-child(5),
+            .orders-table th:nth-child(7),
+            .orders-table td:nth-child(7) {
+                display: none;
+            }
+            
+            .close {
+                font-size: 24px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+            
+            .header-content {
+                gap: 10px;
+            }
+            
+            .section h2 {
+                font-size: 1.4em;
+            }
+            
+            .tab {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+            
+            .target-metrics {
+                grid-template-columns: 1fr;
+            }
+            
+            /* Even more mobile optimizations for small screens */
+            .orders-table th:nth-child(2),
+            .orders-table td:nth-child(2),
+            .orders-table th:nth-child(3),
+            .orders-table td:nth-child(3) {
+                display: none;
+            }
+            
+            .modal-content {
+                margin: 2% auto;
+                max-height: 90vh;
             }
         }
     </style>
@@ -548,8 +738,22 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>New Home Blinds - Sales Dashboard</h1>
-            <p>Monthly Performance Analysis</p>
+            <div class="header-content">
+                <div class="logo">
+                    <img src="logo.png" alt="New Home Blinds Logo" style="height: 60px; width: auto;">
+                </div>
+                <div class="header-text">
+                    <h1>New Home Blinds - Sales Dashboard</h1>
+                    <p>Monthly Performance Analysis</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tabs Section -->
+        <div class="tabs-container">
+            <button class="tab active" onclick="switchTab('team')">Team Total</button>
+            <button class="tab" onclick="switchTab('Michael Bell')">Michael Bell</button>
+            <button class="tab" onclick="switchTab('Ria Wise')">Ria Wise</button>
         </div>
         
         <div class="dashboard-content">
@@ -564,12 +768,6 @@
                 <div class="section">
                     <h2>Filters</h2>
                     <div class="filters-container">
-                        <div class="filter-group">
-                            <label for="salesRepFilter">Sales Rep:</label>
-                            <select id="salesRepFilter" onchange="applyFilters()">
-                                <option value="">All Sales Reps</option>
-                            </select>
-                        </div>
                         <div class="filter-group">
                             <label for="fyFilter">Financial Year:</label>
                             <select id="fyFilter" onchange="onFYFilterChange()">
@@ -684,6 +882,7 @@
         let dashboardData = null;
         let filteredData = null;
         let rawTransactionData = []; // Store original transaction data for drill-down
+        let currentTab = 'team'; // Track current tab
         
         // Half-year targets (July - December 2025)
         const halfYearTargets = {
@@ -693,6 +892,21 @@
             startMonth: "2025-07",
             endMonth: "2025-12"
         };
+        
+        // Tab switching function
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update current tab
+            currentTab = tabName;
+            
+            // Apply filters with new tab
+            applyFilters();
+        }
         
         // Get current date and calculate defaults
         function getCurrentDefaults() {
@@ -1117,54 +1331,8 @@
             const container = document.getElementById('targetsProgress');
             container.innerHTML = '';
             
-            // Check current sales rep filter
-            const selectedSalesRep = document.getElementById('salesRepFilter').value;
-            
-            if (selectedSalesRep && selectedSalesRep !== '') {
-                // Show only the selected sales rep's progress
-                if (targetProgress.individual[selectedSalesRep]) {
-                    const rep = targetProgress.individual[selectedSalesRep];
-                    
-                    const card = document.createElement('div');
-                    card.className = 'target-card';
-                    card.innerHTML = `
-                        <div class="target-header">
-                            <h3>${selectedSalesRep}</h3>
-                            <span class="target-status ${rep.status}">${rep.status.replace('-', ' ')}</span>
-                        </div>
-                        
-                        <div class="target-metrics">
-                            <div class="target-metric">
-                                <div class="label">Target</div>
-                                <div class="value">${formatCurrency(rep.target)}</div>
-                            </div>
-                            <div class="target-metric">
-                                <div class="label">Actual</div>
-                                <div class="value">${formatCurrency(rep.actual)}</div>
-                            </div>
-                            <div class="target-metric">
-                                <div class="label">Progress</div>
-                                <div class="value">${rep.progressPercent}%</div>
-                            </div>
-                            <div class="target-metric">
-                                <div class="label">Remaining</div>
-                                <div class="value ${rep.remaining > 0 ? 'negative' : 'positive'}">${formatCurrency(rep.remaining)}</div>
-                            </div>
-                        </div>
-                        
-                        <div class="progress-bar-container">
-                            <div class="progress-bar ${rep.status}" style="width: ${Math.min(rep.progressPercent, 100)}%"></div>
-                            <div class="time-progress-indicator" style="left: ${Math.min(rep.timeProgressPercent, 100)}%"></div>
-                        </div>
-                        <div class="progress-text">
-                            ${rep.monthsElapsed.toFixed(1)} of 6 months elapsed (${rep.timeProgressPercent}% of time period)
-                        </div>
-                    `;
-                    
-                    container.appendChild(card);
-                }
-            } else {
-                // Show team summary when "All Sales Reps" is selected
+            if (currentTab === 'team') {
+                // Show team summary when "Team Total" tab is selected
                 const teamSummary = document.createElement('div');
                 teamSummary.className = 'team-summary';
                 teamSummary.innerHTML = `
@@ -1199,6 +1367,49 @@
                 `;
                 
                 container.appendChild(teamSummary);
+            } else {
+                // Show individual sales rep progress
+                if (targetProgress.individual[currentTab]) {
+                    const rep = targetProgress.individual[currentTab];
+                    
+                    const card = document.createElement('div');
+                    card.className = 'target-card';
+                    card.innerHTML = `
+                        <div class="target-header">
+                            <h3>${currentTab}</h3>
+                            <span class="target-status ${rep.status}">${rep.status.replace('-', ' ')}</span>
+                        </div>
+                        
+                        <div class="target-metrics">
+                            <div class="target-metric">
+                                <div class="label">Target</div>
+                                <div class="value">${formatCurrency(rep.target)}</div>
+                            </div>
+                            <div class="target-metric">
+                                <div class="label">Actual</div>
+                                <div class="value">${formatCurrency(rep.actual)}</div>
+                            </div>
+                            <div class="target-metric">
+                                <div class="label">Progress</div>
+                                <div class="value">${rep.progressPercent}%</div>
+                            </div>
+                            <div class="target-metric">
+                                <div class="label">Remaining</div>
+                                <div class="value ${rep.remaining > 0 ? 'negative' : 'positive'}">${formatCurrency(rep.remaining)}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-bar-container">
+                            <div class="progress-bar ${rep.status}" style="width: ${Math.min(rep.progressPercent, 100)}%"></div>
+                            <div class="time-progress-indicator" style="left: ${Math.min(rep.timeProgressPercent, 100)}%"></div>
+                        </div>
+                        <div class="progress-text">
+                            ${rep.monthsElapsed.toFixed(1)} of 6 months elapsed (${rep.timeProgressPercent}% of time period)
+                        </div>
+                    `;
+                    
+                    container.appendChild(card);
+                }
             }
         }
         
@@ -1229,16 +1440,6 @@
         
         function populateFilters(data) {
             const defaults = getCurrentDefaults();
-            
-            // Populate sales rep filter
-            const salesRepFilter = document.getElementById('salesRepFilter');
-            salesRepFilter.innerHTML = '<option value="">All Sales Reps</option>';
-            data.uniqueSalesReps.forEach(rep => {
-                const option = document.createElement('option');
-                option.value = rep;
-                option.textContent = rep;
-                salesRepFilter.appendChild(option);
-            });
             
             // Populate financial year filter and set default to current FY
             const fyFilter = document.getElementById('fyFilter');
@@ -1312,15 +1513,15 @@
         }
         
         function applyFilters() {
-            const salesRepFilter = document.getElementById('salesRepFilter').value;
             const fyFilter = document.getElementById('fyFilter').value;
             const monthFilter = document.getElementById('monthFilter').value;
             
             // Filter summary data
             let filteredSummaryData = dashboardData.summaryData;
             
-            if (salesRepFilter) {
-                filteredSummaryData = filteredSummaryData.filter(item => item.salesRep === salesRepFilter);
+            // Apply tab filter
+            if (currentTab !== 'team') {
+                filteredSummaryData = filteredSummaryData.filter(item => item.salesRep === currentTab);
             }
             
             if (fyFilter) {
@@ -1334,8 +1535,9 @@
             // Filter variance data
             let filteredVarianceData = dashboardData.varianceData;
             
-            if (salesRepFilter) {
-                filteredVarianceData = filteredVarianceData.filter(item => item.salesRep === salesRepFilter);
+            // Apply tab filter
+            if (currentTab !== 'team') {
+                filteredVarianceData = filteredVarianceData.filter(item => item.salesRep === currentTab);
             }
             
             if (fyFilter) {
@@ -1356,13 +1558,13 @@
             filteredData = {
                 summaryData: filteredSummaryData,
                 varianceData: filteredVarianceData,
-                uniqueMonths: salesRepFilter || fyFilter ? 
+                uniqueMonths: fyFilter || currentTab !== 'team' ? 
                     [...new Set(filteredSummaryData.map(item => item.month))].sort() : 
                     dashboardData.uniqueMonths,
                 uniqueSalesReps: monthFilter || fyFilter ? 
                     [...new Set(filteredSummaryData.map(item => item.salesRep))].sort() : 
                     dashboardData.uniqueSalesReps,
-                uniqueFYs: salesRepFilter || monthFilter ?
+                uniqueFYs: monthFilter || currentTab !== 'team' ?
                     [...new Set(filteredSummaryData.map(item => item.financialYear))].sort() :
                     dashboardData.uniqueFYs
             };
@@ -1372,15 +1574,14 @@
         }
         
         function clearFilters() {
-            document.getElementById('salesRepFilter').value = '';
             document.getElementById('fyFilter').value = '';
             document.getElementById('monthFilter').value = '';
             
             // Reset month filter to show all months
             populateMonthFilter(dashboardData.uniqueMonths);
             
-            filteredData = dashboardData;
-            updateFilteredDisplay();
+            // Reapply filters with current tab
+            applyFilters();
         }
         
         function updateFilteredDisplay() {
@@ -1391,17 +1592,16 @@
             }
             
             // Add filter info if filters are applied
-            const salesRepFilter = document.getElementById('salesRepFilter').value;
             const fyFilter = document.getElementById('fyFilter').value;
             const monthFilter = document.getElementById('monthFilter').value;
             
-            if (salesRepFilter || fyFilter || monthFilter) {
+            if (fyFilter || monthFilter || currentTab !== 'team') {
                 const filterInfo = document.createElement('div');
                 filterInfo.className = 'filtered-info';
                 let filterText = 'Filtered by: ';
                 const filters = [];
                 
-                if (salesRepFilter) filters.push(`Sales Rep: ${salesRepFilter}`);
+                if (currentTab !== 'team') filters.push(`Sales Rep: ${currentTab}`);
                 if (fyFilter) filters.push(`Financial Year: ${fyFilter}`);
                 if (monthFilter) filters.push(`Month: ${formatMonth(monthFilter)}`);
                 
