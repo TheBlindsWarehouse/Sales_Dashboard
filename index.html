@@ -283,6 +283,11 @@
             font-size: 1.6em;
         }
         
+        .summary-card.discount-card .value {
+            font-size: 1em;
+            line-height: 1.2;
+        }
+        
         .summary-card h3 {
             color: #667eea;
             font-size: 0.9em;
@@ -852,6 +857,10 @@
                 font-size: 1.4em;
             }
             
+            .summary-card.discount-card .value {
+                font-size: 0.9em;
+            }
+            
             #currentPeriodHeading {
                 margin: 0 -15px 15px -15px;
                 font-size: 1.8em;
@@ -892,6 +901,10 @@
             
             .summary-card .value {
                 font-size: 1.5em;
+            }
+            
+            .summary-card.discount-card .value {
+                font-size: 0.85em;
             }
             
             table {
@@ -1912,14 +1925,30 @@
             
             const totalSalesExcludingDiscounts = _.sumBy(salesTransactions, 'Amount');
             
-            // Calculate discount percentage
-            const discountPercentage = totalSalesExcludingDiscounts > 0 ? 
+            // Calculate discount percentage across all orders
+            const overallDiscountPercentage = totalSalesExcludingDiscounts > 0 ? 
                 (totalDiscounts / totalSalesExcludingDiscounts) * 100 : 0;
+            
+            // Calculate discount percentage on discounted orders only
+            // First, identify which invoices/orders had discounts
+            const discountedInvoiceNumbers = [...new Set(discountTransactions.map(row => row['No.']))];
+            
+            // Find sales transactions for those specific invoices
+            const discountedOrderSales = salesTransactions.filter(row => 
+                discountedInvoiceNumbers.includes(row['No.'])
+            );
+            
+            const totalSalesFromDiscountedOrders = _.sumBy(discountedOrderSales, 'Amount');
+            
+            const discountedOrdersPercentage = totalSalesFromDiscountedOrders > 0 ? 
+                (totalDiscounts / totalSalesFromDiscountedOrders) * 100 : 0;
             
             return {
                 totalDiscounts: totalDiscounts,
                 totalSalesExcludingDiscounts: totalSalesExcludingDiscounts,
-                discountPercentage: discountPercentage
+                overallDiscountPercentage: overallDiscountPercentage,
+                discountedOrdersPercentage: discountedOrdersPercentage,
+                discountedOrderCount: discountedInvoiceNumbers.length
             };
         }
         
@@ -2398,7 +2427,18 @@
                 { title: 'Total Sales', value: formatCurrency(totalSales), class: `total-sales ${performanceStatus}` },
                 { title: 'Total Orders', value: totalOrders.toLocaleString(), class: 'secondary' },
                 { title: 'Average Order Value', value: formatCurrency(avgOrderValueOverall), class: 'secondary' },
-                { title: 'Average Discount %', value: `${discountInfo.discountPercentage.toFixed(1)}%`, class: 'secondary' }
+                { 
+                    title: 'Discount Metrics', 
+                    value: `
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <div style="font-size: 0.7em; color: #666; font-weight: normal;">Overall Impact:</div>
+                            <div style="font-size: 1.4em; margin-bottom: 8px;">${discountInfo.overallDiscountPercentage.toFixed(1)}%</div>
+                            <div style="font-size: 0.7em; color: #666; font-weight: normal;">On Discounted Orders:</div>
+                            <div style="font-size: 1.2em;">${discountInfo.discountedOrdersPercentage.toFixed(1)}%</div>
+                        </div>
+                    `, 
+                    class: 'secondary discount-card' 
+                }
             ];
             
             cards.forEach(card => {
@@ -2525,23 +2565,23 @@
             
             // Create sample raw transaction data for drill-down, including current month data
             rawTransactionData = [
-                {"Sales Rep":"Adam Bell","Transaction date":"15/05/2025","No.":"INV-001","Name":"Customer A","Amount":60,"Type":"Invoice","Month":5,"Year":2025,"MonthYear":"2025-05","FinancialYear":"FY24/25"},
-                {"Sales Rep":"Michael Bell","Transaction date":"10/03/2025","No.":"INV-002","Name":"Customer B","Amount":500,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
-                {"Sales Rep":"Michael Bell","Transaction date":"15/03/2025","No.":"INV-003","Name":"Customer C","Amount":750,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
-                {"Sales Rep":"Michael Bell","Transaction date":"20/03/2025","No.":"INV-004","Name":"Customer D","Amount":650,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
-                {"Sales Rep":"Michael Bell","Transaction date":"25/03/2025","No.":"INV-005","Name":"Customer E","Amount":527.5,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
+                {"Sales Rep":"Adam Bell","Transaction date":"15/05/2025","No.":"INV-001","Name":"Customer A","Amount":60,"Type":"Invoice","Product/Service":"Vertical Blinds","Month":5,"Year":2025,"MonthYear":"2025-05","FinancialYear":"FY24/25"},
+                {"Sales Rep":"Michael Bell","Transaction date":"10/03/2025","No.":"INV-002","Name":"Customer B","Amount":500,"Type":"Invoice","Product/Service":"Roller Blinds","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
+                {"Sales Rep":"Michael Bell","Transaction date":"15/03/2025","No.":"INV-003","Name":"Customer C","Amount":750,"Type":"Invoice","Product/Service":"Venetian Blinds","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
+                {"Sales Rep":"Michael Bell","Transaction date":"20/03/2025","No.":"INV-004","Name":"Customer D","Amount":650,"Type":"Invoice","Product/Service":"Roman Blinds","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
+                {"Sales Rep":"Michael Bell","Transaction date":"25/03/2025","No.":"INV-005","Name":"Customer E","Amount":527.5,"Type":"Invoice","Product/Service":"Wooden Blinds","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
                 {"Sales Rep":"Michael Bell","Transaction date":"26/03/2025","No.":"CM-001","Name":"Customer E","Amount":-27.5,"Type":"Credit Memo","Product/Service":"Discretionary Discount","Line Description":"Discount applied","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
-                {"Sales Rep":"Ria Wise","Transaction date":"05/03/2025","No.":"INV-006","Name":"Customer F","Amount":1200,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
-                {"Sales Rep":"Ria Wise","Transaction date":"08/03/2025","No.":"INV-007","Name":"Customer G","Amount":850,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
+                {"Sales Rep":"Ria Wise","Transaction date":"05/03/2025","No.":"INV-006","Name":"Customer F","Amount":1200,"Type":"Invoice","Product/Service":"Motorized Blinds","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
+                {"Sales Rep":"Ria Wise","Transaction date":"08/03/2025","No.":"INV-007","Name":"Customer G","Amount":850,"Type":"Invoice","Product/Service":"Plantation Shutters","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
                 {"Sales Rep":"Ria Wise","Transaction date":"09/03/2025","No.":"CM-002","Name":"Customer G","Amount":-50,"Type":"Credit Memo","Product/Service":"Discretionary Discount","Line Description":"Volume discount","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
                 // July 2025 data (start of target period)
-                {"Sales Rep":"Michael Bell","Transaction date":"01/07/2025","No.":"INV-008","Name":"Customer H","Amount":12500,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
-                {"Sales Rep":"Michael Bell","Transaction date":"05/07/2025","No.":"INV-009","Name":"Customer I","Amount":8750,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
-                {"Sales Rep":"Michael Bell","Transaction date":"15/07/2025","No.":"INV-010","Name":"Customer J","Amount":6200,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
+                {"Sales Rep":"Michael Bell","Transaction date":"01/07/2025","No.":"INV-008","Name":"Customer H","Amount":12500,"Type":"Invoice","Product/Service":"Commercial Blinds","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
+                {"Sales Rep":"Michael Bell","Transaction date":"05/07/2025","No.":"INV-009","Name":"Customer I","Amount":8750,"Type":"Invoice","Product/Service":"Blackout Blinds","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
+                {"Sales Rep":"Michael Bell","Transaction date":"15/07/2025","No.":"INV-010","Name":"Customer J","Amount":6200,"Type":"Invoice","Product/Service":"Vertical Blinds","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
                 {"Sales Rep":"Michael Bell","Transaction date":"16/07/2025","No.":"CM-003","Name":"Customer J","Amount":-200,"Type":"Credit Memo","Product/Service":"Discretionary Discount","Line Description":"Early payment discount","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
-                {"Sales Rep":"Ria Wise","Transaction date":"02/07/2025","No.":"INV-011","Name":"Customer K","Amount":18500,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
-                {"Sales Rep":"Ria Wise","Transaction date":"10/07/2025","No.":"INV-012","Name":"Customer L","Amount":14750,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
-                {"Sales Rep":"Ria Wise","Transaction date":"20/07/2025","No.":"INV-013","Name":"Customer M","Amount":11200,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
+                {"Sales Rep":"Ria Wise","Transaction date":"02/07/2025","No.":"INV-011","Name":"Customer K","Amount":18500,"Type":"Invoice","Product/Service":"Premium Shutters","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
+                {"Sales Rep":"Ria Wise","Transaction date":"10/07/2025","No.":"INV-012","Name":"Customer L","Amount":14750,"Type":"Invoice","Product/Service":"Motorized Curtains","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
+                {"Sales Rep":"Ria Wise","Transaction date":"20/07/2025","No.":"INV-013","Name":"Customer M","Amount":11200,"Type":"Invoice","Product/Service":"Roller Blinds","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
                 {"Sales Rep":"Ria Wise","Transaction date":"21/07/2025","No.":"CM-004","Name":"Customer M","Amount":-400,"Type":"Credit Memo","Product/Service":"Discretionary Discount","Line Description":"Customer loyalty discount","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"}
             ];
             
