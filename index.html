@@ -932,10 +932,10 @@
                     // Add visual grouping - show invoice number only on first item
                     const displayInvoiceNo = index === 0 ? invoiceNo : '';
                     const displayDate = index === 0 ? item['Transaction date'] : '';
-                    const displayCustomer = index === 0 ? (item['Name'] || 'N/A') : '';
+                    const displayCustomer = index === 0 ? (item['Customer'] || 'N/A') : '';
                     
-                    // Use Description column if available, otherwise use a default description
-                    const description = item['Description'] || item['Item'] || item['Product'] || 'Sales Item';
+                    // Use Line Description from CSV
+                    const description = item['Line Description'] || 'Sales Item';
                     
                     tr.innerHTML = `
                         <td style="font-weight: ${index === 0 ? 'bold' : 'normal'};">${displayInvoiceNo}</td>
