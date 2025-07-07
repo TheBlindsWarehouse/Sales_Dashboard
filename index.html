@@ -643,6 +643,91 @@
             letter-spacing: 0.5px;
         }
         
+        /* Chart Styling */
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            height: 250px;
+            gap: 15px;
+            padding: 0 10px;
+            justify-content: space-between;
+        }
+        
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            border-radius: 6px 6px 0 0;
+            min-height: 5px;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-bar:hover {
+            background: linear-gradient(180deg, #5a67d8 0%, #6b46c1 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .chart-bar.current-month {
+            background: linear-gradient(180deg, #28a745 0%, #20c997 100%);
+        }
+        
+        .chart-bar.current-month:hover {
+            background: linear-gradient(180deg, #218838 0%, #1e7e34 100%);
+        }
+        
+        .chart-bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            font-weight: 600;
+            color: #333;
+            white-space: nowrap;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2px 6px;
+            border-radius: 3px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-labels {
+            display: flex;
+            gap: 15px;
+            padding: 15px 10px 0;
+            justify-content: space-between;
+        }
+        
+        .chart-label {
+            flex: 1;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .chart-label.current {
+            color: #28a745;
+            font-weight: 700;
+        }
+        
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -709,6 +794,34 @@
                 margin: 0 -15px 15px -15px;
                 font-size: 1.8em;
                 padding: 15px 20px;
+            }
+            
+            .chart-container {
+                padding: 15px;
+                margin-top: 15px;
+            }
+            
+            .chart-wrapper {
+                height: 250px;
+            }
+            
+            .chart-bars {
+                height: 200px;
+                gap: 8px;
+            }
+            
+            .chart-bar-value {
+                font-size: 10px;
+                top: -22px;
+            }
+            
+            .chart-labels {
+                gap: 8px;
+                padding-top: 10px;
+            }
+            
+            .chart-label {
+                font-size: 11px;
             }
             
             .summary-card {
@@ -829,6 +942,34 @@
                 padding: 12px 15px;
             }
             
+            .chart-container {
+                padding: 12px;
+            }
+            
+            .chart-wrapper {
+                height: 200px;
+            }
+            
+            .chart-bars {
+                height: 160px;
+                gap: 6px;
+            }
+            
+            .chart-bar-value {
+                font-size: 9px;
+                top: -20px;
+                padding: 1px 4px;
+            }
+            
+            .chart-labels {
+                gap: 6px;
+                padding-top: 8px;
+            }
+            
+            .chart-label {
+                font-size: 10px;
+            }
+            
             .modal-content {
                 margin: 2% auto;
                 max-height: 90vh;
@@ -904,6 +1045,9 @@
                 <!-- Summary Cards -->
                 <div class="section">
                     <h2>Summary</h2>
+                    <p style="color: #666; margin-bottom: 15px; font-style: italic;">
+                        💡 Click on Total Sales to view all order details
+                    </p>
                     <div class="summary-cards" id="summaryCards"></div>
                 </div>
                 
@@ -954,6 +1098,17 @@
                             </thead>
                             <tbody id="varianceTableBody"></tbody>
                         </table>
+                    </div>
+                </div>
+                
+                <!-- Rolling 6-Month Sales Chart -->
+                <div class="section">
+                    <h2 id="chartTitle">Rolling 6-Month Sales Trend</h2>
+                    <div class="chart-container">
+                        <div class="chart-wrapper">
+                            <div class="chart-bars" id="chartBars"></div>
+                            <div class="chart-labels" id="chartLabels"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1677,6 +1832,8 @@
             // Apply default filters after a short delay to ensure DOM is updated
             setTimeout(() => {
                 applyFilters();
+                // Initialize chart after filters are applied
+                setTimeout(() => updateRolling6MonthChart(), 200);
             }, 100);
         }
         
@@ -1905,6 +2062,142 @@
             // Update tables
             populatePerformanceTable(filteredData.summaryData);
             populateVarianceTable(filteredData.varianceData);
+            
+            // Update rolling 6-month chart
+            updateRolling6MonthChart();
+        }
+        
+        function getRolling6MonthData() {
+            // Get the last 6 months based on available data
+            const allMonths = [...new Set(dashboardData.summaryData.map(item => item.month))].sort();
+            const last6Months = allMonths.slice(-6);
+            
+            // Get current date for determining which month is "current"
+            const now = new Date();
+            const currentMonthYear = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            
+            const chartData = [];
+            
+            last6Months.forEach(month => {
+                let monthData = dashboardData.summaryData.filter(item => item.month === month);
+                
+                // Apply tab filter
+                if (currentTab !== 'team') {
+                    monthData = monthData.filter(item => item.salesRep === currentTab);
+                }
+                
+                const totalSales = _.sumBy(monthData, 'totalSales');
+                const totalOrders = _.sumBy(monthData, 'orderCount');
+                const isCurrentMonth = month === currentMonthYear;
+                
+                chartData.push({
+                    month: month,
+                    totalSales: totalSales,
+                    totalOrders: totalOrders,
+                    isCurrentMonth: isCurrentMonth,
+                    label: isCurrentMonth ? `${formatMonthShort(month)} (Current)` : formatMonthShort(month)
+                });
+            });
+            
+            return chartData;
+        }
+        
+        function formatMonthShort(monthStr) {
+            const [year, month] = monthStr.split('-');
+            const date = new Date(year, month - 1);
+            return date.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' });
+        }
+        
+        function updateRolling6MonthChart() {
+            const chartData = getRolling6MonthData();
+            
+            // Update chart title based on current tab
+            const chartTitle = document.getElementById('chartTitle');
+            if (currentTab === 'team') {
+                chartTitle.textContent = 'Rolling 6-Month Sales Trend - Team Total';
+            } else {
+                chartTitle.textContent = `Rolling 6-Month Sales Trend - ${currentTab}`;
+            }
+            
+            // Find max value for scaling
+            const maxSales = Math.max(...chartData.map(d => d.totalSales));
+            const chartBarsContainer = document.getElementById('chartBars');
+            const chartLabelsContainer = document.getElementById('chartLabels');
+            
+            // Clear existing content
+            chartBarsContainer.innerHTML = '';
+            chartLabelsContainer.innerHTML = '';
+            
+            if (maxSales === 0) {
+                chartBarsContainer.innerHTML = '<div style="text-align: center; color: #666; padding: 50px;">No sales data available for chart period</div>';
+                return;
+            }
+            
+            chartData.forEach(data => {
+                // Create bar
+                const bar = document.createElement('div');
+                bar.className = `chart-bar ${data.isCurrentMonth ? 'current-month' : ''}`;
+                const heightPercent = (data.totalSales / maxSales) * 100;
+                bar.style.height = `${Math.max(heightPercent, 2)}%`; // Minimum 2% height for visibility
+                
+                // Add value label on bar
+                const valueLabel = document.createElement('div');
+                valueLabel.className = 'chart-bar-value';
+                valueLabel.textContent = data.totalSales > 0 ? formatCurrencyShort(data.totalSales) : '£0';
+                bar.appendChild(valueLabel);
+                
+                // Add click handler for drill-down
+                if (data.totalSales > 0) {
+                    bar.style.cursor = 'pointer';
+                    bar.onclick = () => {
+                        if (currentTab === 'team') {
+                            showSummaryOrderDetailsForMonth(data.month);
+                        } else {
+                            showOrderDetails(currentTab, data.month);
+                        }
+                    };
+                    bar.title = `Click to view orders for ${data.label}`;
+                }
+                
+                chartBarsContainer.appendChild(bar);
+                
+                // Create label
+                const label = document.createElement('div');
+                label.className = `chart-label ${data.isCurrentMonth ? 'current' : ''}`;
+                label.textContent = data.label;
+                chartLabelsContainer.appendChild(label);
+            });
+        }
+        
+        function formatCurrencyShort(amount) {
+            if (amount >= 1000000) {
+                return '£' + (amount / 1000000).toFixed(1) + 'M';
+            } else if (amount >= 1000) {
+                return '£' + (amount / 1000).toFixed(0) + 'k';
+            } else {
+                return '£' + amount.toFixed(0);
+            }
+        }
+        
+        function showSummaryOrderDetailsForMonth(month) {
+            // Set filters to show specific month and apply
+            const monthData = dashboardData.summaryData.find(item => item.month === month);
+            if (monthData) {
+                document.getElementById('fyFilter').value = monthData.financialYear;
+                document.getElementById('monthFilter').value = month;
+                
+                // Update month dropdown
+                const availableMonths = dashboardData.summaryData
+                    .filter(item => item.financialYear === monthData.financialYear)
+                    .map(item => item.month);
+                const uniqueMonths = [...new Set(availableMonths)].sort();
+                populateMonthFilter(uniqueMonths);
+                document.getElementById('monthFilter').value = month;
+                
+                // Apply filters and then show modal
+                applyFilters();
+                setTimeout(() => showSummaryOrderDetails(), 100);
+            }
         }
         
         function clearFilters() {
