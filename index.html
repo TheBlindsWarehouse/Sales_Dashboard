@@ -13,33 +13,6 @@
             box-sizing: border-box;
         }
         
-        function getMonthlyTarget(salesRep, month) {
-            if (salesRep === 'team') {
-                // Calculate team target as sum of individual targets
-                const riaTarget = monthlyTargets["Ria Wise"][month] || 0;
-                const michaelTarget = monthlyTargets["Michael Bell"][month] || 0;
-                return riaTarget + michaelTarget;
-            }
-            
-            return monthlyTargets[salesRep] ? (monthlyTargets[salesRep][month] || 0) : 0;
-        }
-        
-        function getPerformanceStatus(actualSales, target) {
-            if (target === 0) return 'default';
-            
-            const performanceRatio = actualSales / target;
-            
-            if (performanceRatio >= 1.0) {
-                return 'excellent'; // At or above target
-            } else if (performanceRatio >= 0.8) {
-                return 'good'; // 80-99% of target
-            } else if (performanceRatio >= 0.6) {
-                return 'warning'; // 60-79% of target
-            } else {
-                return 'poor'; // Below 60% of target
-            }
-        }
-        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f5f5f5;
@@ -241,22 +214,6 @@
             border-left: 4px solid #fff;
             transform: scale(1.02);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
-        
-        .summary-card.total-sales.excellent {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-        }
-        
-        .summary-card.total-sales.good {
-            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-        }
-        
-        .summary-card.total-sales.warning {
-            background: linear-gradient(135deg, #fd7e14 0%, #e55a4e 100%);
-        }
-        
-        .summary-card.total-sales.poor {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
         }
         
         .summary-card.total-sales h3 {
@@ -692,7 +649,7 @@
         
         /* Current Period Heading Styling */
         #currentPeriodHeading {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
             padding: 20px 25px;
             margin: 0 -30px 20px -30px;
@@ -1226,26 +1183,6 @@
             period: "July - December 2025",
             startMonth: "2025-07",
             endMonth: "2025-12"
-        };
-        
-        // Monthly targets for conditional coloring
-        const monthlyTargets = {
-            "Ria Wise": {
-                "2025-07": 21400,
-                "2025-08": 22600,
-                "2025-09": 22600,
-                "2025-10": 24300,
-                "2025-11": 24300,
-                "2025-12": 16900
-            },
-            "Michael Bell": {
-                "2025-07": 13200,
-                "2025-08": 14300,
-                "2025-09": 15400,
-                "2025-10": 16500,
-                "2025-11": 17600,
-                "2025-12": 13200
-            }
         };
         
         // Function to check if we should show target progress
@@ -2330,22 +2267,8 @@
             const activeReps = data.uniqueSalesReps.length;
             const monthsTracked = data.uniqueMonths.length;
             
-            // Determine performance status for Total Sales
-            let performanceStatus = 'default';
-            const monthFilter = document.getElementById('monthFilter').value;
-            
-            if (monthFilter) {
-                // Get target for the specific month and current tab
-                const targetSalesRep = currentTab === 'team' ? 'team' : currentTab;
-                const monthlyTarget = getMonthlyTarget(targetSalesRep, monthFilter);
-                
-                if (monthlyTarget > 0) {
-                    performanceStatus = getPerformanceStatus(totalSales, monthlyTarget);
-                }
-            }
-            
             const cards = [
-                { title: 'Total Sales', value: formatCurrency(totalSales), class: `total-sales ${performanceStatus}` },
+                { title: 'Total Sales', value: formatCurrency(totalSales), class: 'total-sales' },
                 { title: 'Total Orders', value: totalOrders.toLocaleString(), class: 'secondary' },
                 { title: 'Average Order Value', value: formatCurrency(avgOrderValueOverall), class: 'secondary' }
             ];
@@ -2355,7 +2278,7 @@
                 cardDiv.className = `summary-card ${card.class}`;
                 
                 // Add click handler for total sales
-                const clickHandler = card.class.includes('total-sales') ? 'onclick="showSummaryOrderDetails()" title="Click to view all orders"' : '';
+                const clickHandler = card.class === 'total-sales' ? 'onclick="showSummaryOrderDetails()" title="Click to view all orders"' : '';
                 
                 cardDiv.innerHTML = `
                     <h3>${card.title}</h3>
