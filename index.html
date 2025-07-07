@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blinds Warehouse Sales Dashboard</title>
+    <title>New Home Blinds - Sales Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
     <style>
@@ -548,8 +548,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>The Blinds Warehouse</h1>
-            <p>Sales Dashboard - Monthly Performance Analysis</p>
+            <h1>New Home Blinds - Sales Dashboard</h1>
+            <p>Monthly Performance Analysis</p>
         </div>
         
         <div class="dashboard-content">
@@ -665,7 +665,8 @@
                                 <th>Invoice No.</th>
                                 <th>Date</th>
                                 <th>Customer</th>
-                                <th>Description</th>
+                                <th>Product/Service</th>
+                                <th>Line Description</th>
                                 <th class="number">Amount (£)</th>
                                 <th>Type</th>
                             </tr>
@@ -934,14 +935,17 @@
                     const displayDate = index === 0 ? item['Transaction date'] : '';
                     const displayCustomer = index === 0 ? (item['Customer'] || 'N/A') : '';
                     
-                    // Use Line Description from CSV
-                    const description = item['Line Description'] || 'Sales Item';
+                    // Get Product/Service and Line Description from CSV
+                    // Try multiple possible column name variations
+                    const productService = item['Product/Service'] || item['Product'] || item['Service'] || 'N/A';
+                    const lineDescription = item['Line Description'] || item['Line description'] || item['Description'] || item['line description'] || 'N/A';
                     
                     tr.innerHTML = `
                         <td style="font-weight: ${index === 0 ? 'bold' : 'normal'};">${displayInvoiceNo}</td>
                         <td>${displayDate}</td>
                         <td>${displayCustomer}</td>
-                        <td>${description}</td>
+                        <td>${productService}</td>
+                        <td>${lineDescription}</td>
                         <td class="number">${formatCurrency(item.Amount)}</td>
                         <td>${item['Type'] || 'Invoice'}</td>
                     `;
