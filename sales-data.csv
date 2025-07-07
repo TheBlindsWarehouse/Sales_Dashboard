@@ -1,6 +1,6 @@
 Sales Report - Dashboard Data,,,,,,,,
 The Blinds Warehouse (t/a NEW HOME BLINDS),,,,,,,,
-"March 1-June 30, 2025",,,,,,,,
+"March 1-July 31, 2025",,,,,,,,
 
 Sales Rep,Transaction date,Transaction type,No.,Customer,Line description,Product/Service,Distribution account,Amount
 Ria Wise,01/03/2025,Invoice,13222,Sebastian Szczakiel,1943 Szczakiel,Supply and fit,Sales,649.17
@@ -135,7 +135,12 @@ Michael Bell,30/06/2025,Invoice,13344,Wardle & Keach Ltd,2161 Wardle,Supply and 
 Michael Bell,30/06/2025,Invoice,13344,Wardle & Keach Ltd,,Discretionary Discount,Discretionary Discounts,-103.00
 Michael Bell,30/06/2025,Invoice,13345,"Collins, Hannah",2106 Collins,Supply and fit,Sales,348.33
 Ria Wise,30/06/2025,Invoice,13346,YVONNE BELCHER,1953 Belcher,Supply and fit,Sales,662.50
+Ria Wise,01/07/2025,Invoice,13347,"Elliott, Deborah & Mike",2162 Elliot,Supply and fit,Sales,267.50
+Ria Wise,04/07/2025,Invoice,13348,Carol White,2149 White (3 x verticals),Supply and fit,Sales,333.33
+Ria Wise,07/07/2025,Invoice,13350,"Pereira, Crizal",1965 Pereira,Supply and fit,Sales,262.50
+Ria Wise,07/07/2025,Invoice,13350,"Pereira, Crizal",,Voucher,Promotional Discounts,-16.67
+Ria Wise,07/07/2025,Invoice,13351,"Kipasa, Kenny",2169 Kipasa,Supply and fit,Sales,336.67
 
 
 
-" Monday, July 07, 2025 03:15 PM GMTZ",,,,,,,,
+" Monday, July 07, 2025 03:18 PM GMTZ",,,,,,,,
