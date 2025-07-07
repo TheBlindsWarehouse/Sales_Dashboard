@@ -1800,8 +1800,12 @@
             
             if (showTargets) {
                 targetSection.classList.remove('hidden');
-                // Calculate and display target progress with filtered data
-                const targetProgress = calculateTargetProgress(filteredData.summaryData);
+                // Calculate target progress using ALL data (not filtered by month) but filtered by tab
+                let targetCalculationData = dashboardData.summaryData;
+                if (currentTab !== 'team') {
+                    targetCalculationData = dashboardData.summaryData.filter(item => item.salesRep === currentTab);
+                }
+                const targetProgress = calculateTargetProgress(targetCalculationData);
                 displayTargetProgress(targetProgress);
             } else {
                 targetSection.classList.add('hidden');
