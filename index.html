@@ -222,7 +222,7 @@
         
         .summary-cards {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
             gap: 20px;
             margin-bottom: 30px;
         }
@@ -836,7 +836,7 @@
             }
             
             .summary-cards {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 1fr;
                 gap: 15px;
             }
             
@@ -994,6 +994,10 @@
                 padding: 12px 15px;
                 font-size: 14px;
                 font-weight: 600;
+            }
+            
+            .summary-cards {
+                grid-template-columns: 1fr;
             }
             
             .target-metrics {
@@ -1870,6 +1874,58 @@
             }
         }
         
+        function calculateDiscountPercentage(data) {
+            // Get current filter values for filtering raw transaction data
+            const fyFilter = document.getElementById('fyFilter').value;
+            const monthFilter = document.getElementById('monthFilter').value;
+            
+            // Filter raw transaction data based on current filters
+            let filteredTransactions = rawTransactionData;
+            
+            // Apply tab filter (sales rep)
+            if (currentTab !== 'team') {
+                filteredTransactions = filteredTransactions.filter(row => row['Sales Rep'] === currentTab);
+            }
+            
+            // Apply financial year filter
+            if (fyFilter) {
+                filteredTransactions = filteredTransactions.filter(row => row.FinancialYear === fyFilter);
+            }
+            
+            // Apply month filter
+            if (monthFilter) {
+                filteredTransactions = filteredTransactions.filter(row => row.MonthYear === monthFilter);
+            }
+            
+            // Calculate discretionary discounts
+            const discountTransactions = filteredTransactions.filter(row => 
+                row.Type && row.Type.toLowerCase().includes('discretionary discount') ||
+                row['Line Description'] && row['Line Description'].toLowerCase().includes('discretionary discount') ||
+                row.Amount < 0 && (row.Type === 'Credit Memo' || row.Type === 'Credit Note')
+            );
+            
+            const totalDiscounts = Math.abs(_.sumBy(discountTransactions, 'Amount'));
+            
+            // Calculate sales excluding discounts
+            const salesTransactions = filteredTransactions.filter(row => 
+                !(row.Type && row.Type.toLowerCase().includes('discretionary discount')) &&
+                !(row['Line Description'] && row['Line Description'].toLowerCase().includes('discretionary discount')) &&
+                row.Amount > 0
+            );
+            
+            const totalSalesExcludingDiscounts = _.sumBy(salesTransactions, 'Amount');
+            
+            // Calculate discount percentage
+            const discountPercentage = totalSalesExcludingDiscounts > 0 ? 
+                (totalDiscounts / totalSalesExcludingDiscounts) * 100 : 0;
+            
+            return {
+                totalDiscounts: totalDiscounts,
+                totalSalesExcludingDiscounts: totalSalesExcludingDiscounts,
+                discountPercentage: discountPercentage
+            };
+        }
+        
         function displayDashboard(data) {
             dashboardData = data;
             filteredData = data; // Initialize filtered data
@@ -2282,17 +2338,6 @@
             }
         }
         
-        function clearFilters() {
-            document.getElementById('fyFilter').value = '';
-            document.getElementById('monthFilter').value = '';
-            
-            // Reset month filter to show all months
-            populateMonthFilter(dashboardData.uniqueMonths);
-            
-            // Reapply filters with current tab
-            applyFilters();
-        }
-        
         function updateCurrentPeriodHeading() {
             const fyFilter = document.getElementById('fyFilter').value;
             const monthFilter = document.getElementById('monthFilter').value;
@@ -2328,6 +2373,9 @@
             const totalOrders = _.sumBy(data.summaryData, 'orderCount');
             const avgOrderValueOverall = totalOrders > 0 ? totalSales / totalOrders : 0;
             
+            // Calculate discount percentage from raw transaction data
+            const discountInfo = calculateDiscountPercentage(data);
+            
             // Determine performance status for Total Sales
             let performanceStatus = 'default';
             
@@ -2352,7 +2400,8 @@
             const cards = [
                 { title: 'Total Sales', value: formatCurrency(totalSales), class: `total-sales ${performanceStatus}` },
                 { title: 'Total Orders', value: totalOrders.toLocaleString(), class: 'secondary' },
-                { title: 'Average Order Value', value: formatCurrency(avgOrderValueOverall), class: 'secondary' }
+                { title: 'Average Order Value', value: formatCurrency(avgOrderValueOverall), class: 'secondary' },
+                { title: 'Average Discount %', value: `${discountInfo.discountPercentage.toFixed(1)}%`, class: 'secondary' }
             ];
             
             cards.forEach(card => {
@@ -2484,15 +2533,19 @@
                 {"Sales Rep":"Michael Bell","Transaction date":"15/03/2025","No.":"INV-003","Name":"Customer C","Amount":750,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
                 {"Sales Rep":"Michael Bell","Transaction date":"20/03/2025","No.":"INV-004","Name":"Customer D","Amount":650,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
                 {"Sales Rep":"Michael Bell","Transaction date":"25/03/2025","No.":"INV-005","Name":"Customer E","Amount":527.5,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
+                {"Sales Rep":"Michael Bell","Transaction date":"26/03/2025","No.":"CM-001","Name":"Customer E","Amount":-27.5,"Type":"Credit Memo","Line Description":"Discretionary Discount","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
                 {"Sales Rep":"Ria Wise","Transaction date":"05/03/2025","No.":"INV-006","Name":"Customer F","Amount":1200,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
                 {"Sales Rep":"Ria Wise","Transaction date":"08/03/2025","No.":"INV-007","Name":"Customer G","Amount":850,"Type":"Invoice","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
+                {"Sales Rep":"Ria Wise","Transaction date":"09/03/2025","No.":"CM-002","Name":"Customer G","Amount":-50,"Type":"Credit Memo","Line Description":"Discretionary Discount","Month":3,"Year":2025,"MonthYear":"2025-03","FinancialYear":"FY24/25"},
                 // July 2025 data (start of target period)
                 {"Sales Rep":"Michael Bell","Transaction date":"01/07/2025","No.":"INV-008","Name":"Customer H","Amount":12500,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
                 {"Sales Rep":"Michael Bell","Transaction date":"05/07/2025","No.":"INV-009","Name":"Customer I","Amount":8750,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
                 {"Sales Rep":"Michael Bell","Transaction date":"15/07/2025","No.":"INV-010","Name":"Customer J","Amount":6200,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
+                {"Sales Rep":"Michael Bell","Transaction date":"16/07/2025","No.":"CM-003","Name":"Customer J","Amount":-200,"Type":"Credit Memo","Line Description":"Discretionary Discount","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
                 {"Sales Rep":"Ria Wise","Transaction date":"02/07/2025","No.":"INV-011","Name":"Customer K","Amount":18500,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
                 {"Sales Rep":"Ria Wise","Transaction date":"10/07/2025","No.":"INV-012","Name":"Customer L","Amount":14750,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
-                {"Sales Rep":"Ria Wise","Transaction date":"20/07/2025","No.":"INV-013","Name":"Customer M","Amount":11200,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"}
+                {"Sales Rep":"Ria Wise","Transaction date":"20/07/2025","No.":"INV-013","Name":"Customer M","Amount":11200,"Type":"Invoice","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"},
+                {"Sales Rep":"Ria Wise","Transaction date":"21/07/2025","No.":"CM-004","Name":"Customer M","Amount":-400,"Type":"Credit Memo","Line Description":"Discretionary Discount","Month":7,"Year":2025,"MonthYear":"2025-07","FinancialYear":"FY25/26"}
             ];
             
             const sampleData = {
