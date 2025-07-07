@@ -536,6 +536,111 @@
             margin-bottom: 20px;
         }
         
+        .target-progress-wrapper {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 30px;
+            align-items: start;
+        }
+        
+        .target-cards-container {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .speedometer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 200px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #667eea;
+        }
+        
+        .speedometer-title {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .speedometer {
+            position: relative;
+            width: 160px;
+            height: 80px;
+            margin-bottom: 10px;
+        }
+        
+        .speedometer-arc {
+            stroke-width: 12;
+            fill: none;
+        }
+        
+        .speedometer-arc.behind {
+            stroke: #dc3545;
+        }
+        
+        .speedometer-arc.on-track {
+            stroke: #ffc107;
+        }
+        
+        .speedometer-arc.ahead {
+            stroke: #28a745;
+        }
+        
+        .speedometer-needle {
+            stroke: #333;
+            stroke-width: 3;
+            stroke-linecap: round;
+            transform-origin: 80px 70px;
+            transition: transform 0.8s ease-in-out;
+        }
+        
+        .speedometer-center {
+            fill: #333;
+        }
+        
+        .speedometer-labels {
+            display: flex;
+            justify-content: space-between;
+            width: 160px;
+            font-size: 0.7em;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .speedometer-status {
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-top: 8px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .speedometer-status.behind {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+        
+        .speedometer-status.on-track {
+            background: rgba(255, 193, 7, 0.1);
+            color: #856404;
+        }
+        
+        .speedometer-status.ahead {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
         .target-card {
             background: white;
             border-radius: 8px;
@@ -945,6 +1050,18 @@
                 font-size: 1em;
             }
             
+            .target-progress-wrapper {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .speedometer-container {
+                min-width: auto;
+                width: 100%;
+                max-width: 300px;
+                margin: 0 auto;
+            }
+            
             .order-summary {
                 grid-template-columns: 1fr;
                 gap: 10px;
@@ -1015,6 +1132,14 @@
             
             .target-metrics {
                 grid-template-columns: 1fr;
+            }
+            
+            .speedometer-container {
+                padding: 15px;
+            }
+            
+            .speedometer-labels {
+                font-size: 0.65em;
             }
             
             #currentPeriodHeading {
@@ -1805,6 +1930,14 @@
             const container = document.getElementById('targetsProgress');
             container.innerHTML = '';
             
+            // Create wrapper for progress cards and speedometer
+            const wrapper = document.createElement('div');
+            wrapper.className = 'target-progress-wrapper';
+            
+            // Create container for target cards
+            const cardsContainer = document.createElement('div');
+            cardsContainer.className = 'target-cards-container';
+            
             if (currentTab === 'team') {
                 // Show team summary when "Team Total" tab is selected
                 const teamSummary = document.createElement('div');
@@ -1840,7 +1973,13 @@
                     </div>
                 `;
                 
-                container.appendChild(teamSummary);
+                cardsContainer.appendChild(teamSummary);
+                
+                // Create speedometer for team
+                const speedometer = createSpeedometer(targetProgress.team);
+                wrapper.appendChild(cardsContainer);
+                wrapper.appendChild(speedometer);
+                
             } else {
                 // Show individual sales rep progress
                 if (targetProgress.individual[currentTab]) {
@@ -1882,9 +2021,73 @@
                         </div>
                     `;
                     
-                    container.appendChild(card);
+                    cardsContainer.appendChild(card);
+                    
+                    // Create speedometer for individual rep
+                    const speedometer = createSpeedometer(rep);
+                    wrapper.appendChild(cardsContainer);
+                    wrapper.appendChild(speedometer);
                 }
             }
+            
+            container.appendChild(wrapper);
+        }
+        
+        function createSpeedometer(progressData) {
+            const speedometerContainer = document.createElement('div');
+            speedometerContainer.className = 'speedometer-container';
+            
+            // Calculate performance ratio (how ahead/behind they are relative to time)
+            const performanceRatio = progressData.timeProgressPercent > 0 ? 
+                progressData.progressPercent / progressData.timeProgressPercent : 1;
+            
+            // Convert to speedometer position (0 = far behind, 0.5 = on track, 1 = far ahead)
+            // Scale: 0.5-1.5 ratio maps to 0-1 speedometer position
+            let speedometerPosition = Math.max(0, Math.min(1, (performanceRatio - 0.5) / 1.0 + 0.5));
+            
+            // Calculate needle angle (0 degrees = far left, 180 degrees = far right)
+            const needleAngle = speedometerPosition * 180;
+            
+            // Determine status based on performance ratio
+            let status = 'on-track';
+            if (performanceRatio < 0.85) {
+                status = 'behind';
+            } else if (performanceRatio > 1.15) {
+                status = 'ahead';
+            }
+            
+            speedometerContainer.innerHTML = `
+                <div class="speedometer-title">Performance Gauge</div>
+                <div class="speedometer">
+                    <svg width="160" height="80" viewBox="0 0 160 80">
+                        <!-- Behind section (red) -->
+                        <path d="M 20 70 A 60 60 0 0 1 80 10" class="speedometer-arc behind" />
+                        <!-- On track section (yellow) -->
+                        <path d="M 80 10 A 60 60 0 0 1 140 70" class="speedometer-arc on-track" />
+                        <!-- Ahead section (green) - overlay on part of on-track -->
+                        <path d="M 120 35 A 60 60 0 0 1 140 70" class="speedometer-arc ahead" />
+                        
+                        <!-- Needle (pointing straight up initially, will be rotated via CSS) -->
+                        <line x1="80" y1="70" x2="80" y2="15" class="speedometer-needle" style="transform: rotate(${needleAngle - 90}deg)" />
+                        
+                        <!-- Center dot -->
+                        <circle cx="80" cy="70" r="4" class="speedometer-center" />
+                    </svg>
+                </div>
+                <div class="speedometer-labels">
+                    <span>Behind</span>
+                    <span>On Track</span>
+                    <span>Ahead</span>
+                </div>
+                <div class="speedometer-status ${status}">
+                    ${status.replace('-', ' ')} 
+                    <div style="font-size: 0.8em; font-weight: normal; margin-top: 2px;">
+                        ${performanceRatio.toFixed(2)}x expected
+                    </div>
+                </div>
+            `;
+            
+            return speedometerContainer;
         }
         
         function calculateDiscountPercentage(data) {
