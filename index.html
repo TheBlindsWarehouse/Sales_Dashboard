@@ -208,6 +208,13 @@
         .summary-card.total-sales .value {
             color: white;
             font-size: 2.5em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .summary-card.total-sales .value:hover {
+            transform: scale(1.05);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
         
         .summary-card.secondary {
@@ -1253,6 +1260,60 @@
             document.getElementById('modalTitle').textContent = 
                 `Orders: ${salesRep} - ${formatMonth(month)}`;
             
+            populateOrderModal(orderData, ordersByInvoice, totalSales, orderCount, avgOrderValue);
+        }
+        
+        function showSummaryOrderDetails() {
+            // Get current filter values
+            const fyFilter = document.getElementById('fyFilter').value;
+            const monthFilter = document.getElementById('monthFilter').value;
+            
+            // Filter raw data based on current filters
+            let orderData = rawTransactionData;
+            
+            // Apply tab filter (sales rep)
+            if (currentTab !== 'team') {
+                orderData = orderData.filter(row => row['Sales Rep'] === currentTab);
+            }
+            
+            // Apply financial year filter
+            if (fyFilter) {
+                orderData = orderData.filter(row => row.FinancialYear === fyFilter);
+            }
+            
+            // Apply month filter
+            if (monthFilter) {
+                orderData = orderData.filter(row => row.MonthYear === monthFilter);
+            }
+            
+            // Group by invoice number to organize the display
+            const ordersByInvoice = _.groupBy(orderData, 'No.');
+            
+            // Calculate summary for the modal header
+            const totalSales = _.sumBy(orderData, 'Amount');
+            const uniqueInvoices = Object.keys(ordersByInvoice);
+            const orderCount = uniqueInvoices.length;
+            const avgOrderValue = orderCount > 0 ? totalSales / orderCount : 0;
+            
+            // Create modal title based on current filters
+            let modalTitle = 'All Orders';
+            if (currentTab !== 'team' && monthFilter) {
+                modalTitle = `Orders: ${currentTab} - ${formatMonth(monthFilter)}`;
+            } else if (currentTab !== 'team') {
+                modalTitle = `All Orders: ${currentTab}`;
+            } else if (monthFilter) {
+                modalTitle = `All Orders - ${formatMonth(monthFilter)}`;
+            } else if (fyFilter) {
+                modalTitle = `All Orders - ${fyFilter}`;
+            }
+            
+            // Update modal title
+            document.getElementById('modalTitle').textContent = modalTitle;
+            
+            populateOrderModal(orderData, ordersByInvoice, totalSales, orderCount, avgOrderValue);
+        }
+        
+        function populateOrderModal(orderData, ordersByInvoice, totalSales, orderCount, avgOrderValue) {
             // Create summary cards
             const summaryContainer = document.getElementById('orderSummary');
             summaryContainer.innerHTML = `
@@ -1274,49 +1335,55 @@
             const tbody = document.getElementById('orderDetailsBody');
             tbody.innerHTML = '';
             
-            // Sort invoices by date (using the first transaction date in each invoice)
-            const sortedInvoices = uniqueInvoices.sort((a, b) => {
-                const dateA = parseDate(ordersByInvoice[a][0]['Transaction date']);
-                const dateB = parseDate(ordersByInvoice[b][0]['Transaction date']);
-                return dateA - dateB;
-            });
-            
-            // Display all line items grouped by invoice
-            sortedInvoices.forEach(invoiceNo => {
-                const invoiceItems = ordersByInvoice[invoiceNo];
-                
-                // Sort items within invoice by any natural order (keeping original order)
-                invoiceItems.forEach((item, index) => {
-                    const tr = document.createElement('tr');
-                    
-                    // Add visual grouping - show invoice number only on first item
-                    const displayInvoiceNo = index === 0 ? invoiceNo : '';
-                    const displayDate = index === 0 ? item['Transaction date'] : '';
-                    const displayCustomer = index === 0 ? (item['Customer'] || 'N/A') : '';
-                    
-                    // Get Product/Service and Line Description from CSV
-                    // Try multiple possible column name variations
-                    const productService = item['Product/Service'] || item['Product'] || item['Service'] || 'N/A';
-                    const lineDescription = item['Line Description'] || item['Line description'] || item['Description'] || item['line description'] || 'N/A';
-                    
-                    tr.innerHTML = `
-                        <td style="font-weight: ${index === 0 ? 'bold' : 'normal'};">${displayInvoiceNo}</td>
-                        <td>${displayDate}</td>
-                        <td>${displayCustomer}</td>
-                        <td>${productService}</td>
-                        <td>${lineDescription}</td>
-                        <td class="number">${formatCurrency(item.Amount)}</td>
-                        <td>${item['Type'] || 'Invoice'}</td>
-                    `;
-                    
-                    // Add subtle border between invoices
-                    if (index === 0 && tbody.children.length > 0) {
-                        tr.style.borderTop = '2px solid #dee2e6';
-                    }
-                    
-                    tbody.appendChild(tr);
+            if (orderCount === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = '<td colspan="7" style="text-align: center; color: #666; padding: 30px;">No orders found for the selected criteria</td>';
+                tbody.appendChild(tr);
+            } else {
+                // Sort invoices by date (using the first transaction date in each invoice)
+                const sortedInvoices = Object.keys(ordersByInvoice).sort((a, b) => {
+                    const dateA = parseDate(ordersByInvoice[a][0]['Transaction date']);
+                    const dateB = parseDate(ordersByInvoice[b][0]['Transaction date']);
+                    return dateB - dateA; // Most recent first
                 });
-            });
+                
+                // Display all line items grouped by invoice
+                sortedInvoices.forEach(invoiceNo => {
+                    const invoiceItems = ordersByInvoice[invoiceNo];
+                    
+                    // Sort items within invoice by any natural order (keeping original order)
+                    invoiceItems.forEach((item, index) => {
+                        const tr = document.createElement('tr');
+                        
+                        // Add visual grouping - show invoice number only on first item
+                        const displayInvoiceNo = index === 0 ? invoiceNo : '';
+                        const displayDate = index === 0 ? item['Transaction date'] : '';
+                        const displayCustomer = index === 0 ? (item['Customer'] || 'N/A') : '';
+                        
+                        // Get Product/Service and Line Description from CSV
+                        // Try multiple possible column name variations
+                        const productService = item['Product/Service'] || item['Product'] || item['Service'] || 'N/A';
+                        const lineDescription = item['Line Description'] || item['Line description'] || item['Description'] || item['line description'] || 'N/A';
+                        
+                        tr.innerHTML = `
+                            <td style="font-weight: ${index === 0 ? 'bold' : 'normal'};">${displayInvoiceNo}</td>
+                            <td>${displayDate}</td>
+                            <td>${displayCustomer}</td>
+                            <td>${productService}</td>
+                            <td>${lineDescription}</td>
+                            <td class="number">${formatCurrency(item.Amount)}</td>
+                            <td>${item['Type'] || 'Invoice'}</td>
+                        `;
+                        
+                        // Add subtle border between invoices
+                        if (index === 0 && tbody.children.length > 0) {
+                            tr.style.borderTop = '2px solid #dee2e6';
+                        }
+                        
+                        tbody.appendChild(tr);
+                    });
+                });
+            }
             
             // Show scroll hint on mobile devices
             const scrollHint = document.getElementById('scrollHint');
@@ -1897,9 +1964,13 @@
             cards.forEach(card => {
                 const cardDiv = document.createElement('div');
                 cardDiv.className = `summary-card ${card.class}`;
+                
+                // Add click handler for total sales
+                const clickHandler = card.class === 'total-sales' ? 'onclick="showSummaryOrderDetails()" title="Click to view all orders"' : '';
+                
                 cardDiv.innerHTML = `
                     <h3>${card.title}</h3>
-                    <div class="value">${card.value}</div>
+                    <div class="value" ${clickHandler}>${card.value}</div>
                 `;
                 container.appendChild(cardDiv);
             });
