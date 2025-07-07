@@ -662,9 +662,10 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Date</th>
                                 <th>Invoice No.</th>
+                                <th>Date</th>
                                 <th>Customer</th>
+                                <th>Description</th>
                                 <th class="number">Amount (£)</th>
                                 <th>Type</th>
                             </tr>
@@ -879,29 +880,13 @@
                 row['Sales Rep'] === salesRep && row.MonthYear === month
             );
             
-            // Group by invoice number to get unique orders
+            // Group by invoice number to organize the display
             const ordersByInvoice = _.groupBy(orderData, 'No.');
-            const orders = Object.keys(ordersByInvoice).map(invoiceNo => {
-                const invoiceItems = ordersByInvoice[invoiceNo];
-                const totalAmount = _.sumBy(invoiceItems, 'Amount');
-                const firstItem = invoiceItems[0];
-                
-                return {
-                    invoiceNo: invoiceNo,
-                    date: firstItem['Transaction date'],
-                    customer: firstItem['Name'] || 'N/A',
-                    amount: totalAmount,
-                    type: firstItem['Type'] || 'Invoice',
-                    items: invoiceItems
-                };
-            });
             
-            // Sort orders by date
-            orders.sort((a, b) => parseDate(a.date) - parseDate(b.date));
-            
-            // Calculate summary
-            const totalSales = _.sumBy(orders, 'amount');
-            const orderCount = orders.length;
+            // Calculate summary for the modal header
+            const totalSales = _.sumBy(orderData, 'Amount');
+            const uniqueInvoices = Object.keys(ordersByInvoice);
+            const orderCount = uniqueInvoices.length;
             const avgOrderValue = totalSales / orderCount;
             
             // Update modal title
@@ -925,20 +910,49 @@
                 </div>
             `;
             
-            // Populate order details table
+            // Populate order details table with individual line items
             const tbody = document.getElementById('orderDetailsBody');
             tbody.innerHTML = '';
             
-            orders.forEach(order => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${order.date}</td>
-                    <td>${order.invoiceNo}</td>
-                    <td>${order.customer}</td>
-                    <td class="number">${formatCurrency(order.amount)}</td>
-                    <td>${order.type}</td>
-                `;
-                tbody.appendChild(tr);
+            // Sort invoices by date (using the first transaction date in each invoice)
+            const sortedInvoices = uniqueInvoices.sort((a, b) => {
+                const dateA = parseDate(ordersByInvoice[a][0]['Transaction date']);
+                const dateB = parseDate(ordersByInvoice[b][0]['Transaction date']);
+                return dateA - dateB;
+            });
+            
+            // Display all line items grouped by invoice
+            sortedInvoices.forEach(invoiceNo => {
+                const invoiceItems = ordersByInvoice[invoiceNo];
+                
+                // Sort items within invoice by any natural order (keeping original order)
+                invoiceItems.forEach((item, index) => {
+                    const tr = document.createElement('tr');
+                    
+                    // Add visual grouping - show invoice number only on first item
+                    const displayInvoiceNo = index === 0 ? invoiceNo : '';
+                    const displayDate = index === 0 ? item['Transaction date'] : '';
+                    const displayCustomer = index === 0 ? (item['Name'] || 'N/A') : '';
+                    
+                    // Use Description column if available, otherwise use a default description
+                    const description = item['Description'] || item['Item'] || item['Product'] || 'Sales Item';
+                    
+                    tr.innerHTML = `
+                        <td style="font-weight: ${index === 0 ? 'bold' : 'normal'};">${displayInvoiceNo}</td>
+                        <td>${displayDate}</td>
+                        <td>${displayCustomer}</td>
+                        <td>${description}</td>
+                        <td class="number">${formatCurrency(item.Amount)}</td>
+                        <td>${item['Type'] || 'Invoice'}</td>
+                    `;
+                    
+                    // Add subtle border between invoices
+                    if (index === 0 && tbody.children.length > 0) {
+                        tr.style.borderTop = '2px solid #dee2e6';
+                    }
+                    
+                    tbody.appendChild(tr);
+                });
             });
             
             // Show modal
@@ -1041,7 +1055,6 @@
                 const actualSales = _.sumBy(repData, 'totalSales');
                 const progressPercent = target > 0 ? (actualSales / target) * 100 : 0;
                 const remaining = Math.max(0, target - actualSales);
-                const requiredMonthlyAvg = monthsRemaining > 0 ? remaining / monthsRemaining : 0;
                 
                 // Determine status
                 let status = 'on-track';
@@ -1056,7 +1069,6 @@
                     actual: actualSales,
                     progressPercent: Math.round(progressPercent * 10) / 10,
                     remaining: remaining,
-                    requiredMonthlyAvg: requiredMonthlyAvg,
                     status: status,
                     monthsElapsed: Math.round(monthsElapsed * 10) / 10,
                     monthsRemaining: Math.round(monthsRemaining * 10) / 10,
@@ -1074,7 +1086,6 @@
             
             const totalProgressPercent = totalTarget > 0 ? (totalActual / totalTarget) * 100 : 0;
             const totalRemaining = Math.max(0, totalTarget - totalActual);
-            const totalRequiredMonthlyAvg = monthsRemaining > 0 ? totalRemaining / monthsRemaining : 0;
             
             let teamStatus = 'on-track';
             if (totalProgressPercent > progressPercentage + 5) {
@@ -1090,7 +1101,6 @@
                     actual: totalActual,
                     progressPercent: Math.round(totalProgressPercent * 10) / 10,
                     remaining: totalRemaining,
-                    requiredMonthlyAvg: totalRequiredMonthlyAvg,
                     status: teamStatus,
                     monthsElapsed: Math.round(monthsElapsed * 10) / 10,
                     monthsRemaining: Math.round(monthsRemaining * 10) / 10,
@@ -1136,10 +1146,6 @@
                                 <div class="label">Remaining</div>
                                 <div class="value ${rep.remaining > 0 ? 'negative' : 'positive'}">${formatCurrency(rep.remaining)}</div>
                             </div>
-                            <div class="target-metric">
-                                <div class="label">Required Monthly Avg</div>
-                                <div class="value">${formatCurrency(rep.requiredMonthlyAvg)}</div>
-                            </div>
                         </div>
                         
                         <div class="progress-bar-container">
@@ -1175,10 +1181,6 @@
                         <div class="target-metric">
                             <div class="label">Team Remaining</div>
                             <div class="value ${targetProgress.team.remaining > 0 ? 'negative' : 'positive'}">${formatCurrency(targetProgress.team.remaining)}</div>
-                        </div>
-                        <div class="target-metric">
-                            <div class="label">Required Monthly Avg</div>
-                            <div class="value">${formatCurrency(targetProgress.team.requiredMonthlyAvg)}</div>
                         </div>
                     </div>
                     
