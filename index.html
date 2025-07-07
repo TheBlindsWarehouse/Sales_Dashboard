@@ -791,6 +791,11 @@
                     </div>
                 </div>
                 
+                <!-- Current Period Heading -->
+                <div class="section">
+                    <h2 id="currentPeriodHeading">Loading...</h2>
+                </div>
+                
                 <!-- Summary Cards -->
                 <div class="section">
                     <h2>Summary</h2>
@@ -1619,6 +1624,9 @@
                 filtersSection.parentNode.insertBefore(filterInfo, filtersSection.nextSibling);
             }
             
+            // Update current period heading
+            updateCurrentPeriodHeading();
+            
             // Update summary cards
             createSummaryCards(filteredData);
             
@@ -1638,6 +1646,27 @@
             // Update tables
             populatePerformanceTable(filteredData.summaryData);
             populateVarianceTable(filteredData.varianceData);
+        }
+        
+        function updateCurrentPeriodHeading() {
+            const fyFilter = document.getElementById('fyFilter').value;
+            const monthFilter = document.getElementById('monthFilter').value;
+            const headingElement = document.getElementById('currentPeriodHeading');
+            
+            let headingText = '';
+            
+            if (monthFilter) {
+                // Specific month selected
+                headingText = formatMonth(monthFilter);
+            } else if (fyFilter) {
+                // Specific financial year selected, all months
+                headingText = fyFilter + ' Total';
+            } else {
+                // No filters - showing all data
+                headingText = 'All Data Overview';
+            }
+            
+            headingElement.textContent = headingText;
         }
         
         function createSummaryCards(data) {
