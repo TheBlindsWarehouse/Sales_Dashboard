@@ -1004,11 +1004,35 @@
             endMonth: "2025-12"
         };
         
-        // Function to check if filtered data includes target period
+        // Function to check if we should show target progress
         function shouldShowTargetProgress(summaryData) {
             const targetStartMonth = halfYearTargets.startMonth;
             const targetEndMonth = halfYearTargets.endMonth;
             
+            // Check if current filters intersect with target period
+            const fyFilter = document.getElementById('fyFilter').value;
+            const monthFilter = document.getElementById('monthFilter').value;
+            
+            // If specific month is selected, check if it's in target period
+            if (monthFilter) {
+                return monthFilter >= targetStartMonth && monthFilter <= targetEndMonth;
+            }
+            
+            // If specific FY is selected, check if it includes target period
+            if (fyFilter) {
+                // Get all months in the selected FY from the data
+                const fyMonths = dashboardData.summaryData
+                    .filter(item => item.financialYear === fyFilter)
+                    .map(item => item.month);
+                const uniqueFyMonths = [...new Set(fyMonths)].sort();
+                
+                // Check if any month in the FY intersects with target period
+                return uniqueFyMonths.some(month => 
+                    month >= targetStartMonth && month <= targetEndMonth
+                );
+            }
+            
+            // No filters - check if data contains target period
             return summaryData.some(item => 
                 item.month >= targetStartMonth && item.month <= targetEndMonth
             );
