@@ -386,10 +386,21 @@
         
         .orders-table {
             margin-top: 20px;
+            overflow-x: auto;
         }
         
         .orders-table table {
             font-size: 0.9em;
+            min-width: 700px;
+        }
+        
+        #scrollHint {
+            font-style: italic;
+            text-align: center;
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+            border-left: 3px solid #667eea;
         }
         
         .orders-table th {
@@ -681,21 +692,12 @@
             
             .orders-table table {
                 font-size: 0.75em;
+                min-width: 600px;
             }
             
             .orders-table th,
             .orders-table td {
                 padding: 6px 4px;
-            }
-            
-            /* Hide less important columns on mobile */
-            .orders-table th:nth-child(4),
-            .orders-table td:nth-child(4),
-            .orders-table th:nth-child(5),
-            .orders-table td:nth-child(5),
-            .orders-table th:nth-child(7),
-            .orders-table td:nth-child(7) {
-                display: none;
             }
             
             .close {
@@ -725,17 +727,13 @@
                 grid-template-columns: 1fr;
             }
             
-            /* Even more mobile optimizations for small screens */
-            .orders-table th:nth-child(2),
-            .orders-table td:nth-child(2),
-            .orders-table th:nth-child(3),
-            .orders-table td:nth-child(3) {
-                display: none;
-            }
-            
             .modal-content {
                 margin: 2% auto;
                 max-height: 90vh;
+            }
+            
+            .orders-table table {
+                min-width: 550px;
             }
         }
     </style>
@@ -867,6 +865,9 @@
                     <!-- Summary cards will be inserted here -->
                 </div>
                 <div class="orders-table">
+                    <p style="color: #666; margin-bottom: 10px; font-size: 0.85em; display: none;" id="scrollHint">
+                        📱 Scroll horizontally to view all columns
+                    </p>
                     <table>
                         <thead>
                             <tr>
@@ -1192,6 +1193,14 @@
                     tbody.appendChild(tr);
                 });
             });
+            
+            // Show scroll hint on mobile devices
+            const scrollHint = document.getElementById('scrollHint');
+            if (window.innerWidth <= 768) {
+                scrollHint.style.display = 'block';
+            } else {
+                scrollHint.style.display = 'none';
+            }
             
             // Show modal
             document.getElementById('orderModal').style.display = 'block';
