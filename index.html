@@ -13,33 +13,6 @@
             box-sizing: border-box;
         }
         
-        function getMonthlyTarget(salesRep, month) {
-            if (salesRep === 'team') {
-                // Calculate team target as sum of individual targets
-                const riaTarget = monthlyTargets["Ria Wise"][month] || 0;
-                const michaelTarget = monthlyTargets["Michael Bell"][month] || 0;
-                return riaTarget + michaelTarget;
-            }
-            
-            return monthlyTargets[salesRep] ? (monthlyTargets[salesRep][month] || 0) : 0;
-        }
-        
-        function getPerformanceStatus(actualSales, target) {
-            if (target === 0) return 'default';
-            
-            const performanceRatio = actualSales / target;
-            
-            if (performanceRatio >= 1.0) {
-                return 'excellent'; // At or above target
-            } else if (performanceRatio >= 0.8) {
-                return 'good'; // 80-99% of target
-            } else if (performanceRatio >= 0.6) {
-                return 'warning'; // 60-79% of target
-            } else {
-                return 'poor'; // Below 60% of target
-            }
-        }
-        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f5f5f5;
@@ -128,6 +101,24 @@
             box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
         }
         
+        /* Sticky Filter Indicator */
+        .sticky-filter-indicator {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            z-index: 100;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        
+        .sticky-filter-indicator.visible {
+            display: block;
+        }
+        
         .dashboard-content {
             padding: 30px;
         }
@@ -141,10 +132,28 @@
         }
         
         .section.compact-section h2 {
-            font-size: 1.4em;
-            margin-bottom: 12px;
+            font-size: 1.2em;
+            margin-bottom: 8px;
             border-bottom: 2px solid #667eea;
-            padding-bottom: 6px;
+            padding-bottom: 4px;
+        }
+        
+        /* Summary Section Styling */
+        .section.summary-section {
+            background: linear-gradient(135deg, #f8f9fc 0%, #e3f2fd 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px -10px 30px -10px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+        
+        .section.summary-section h2 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 1.6em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 8px;
         }
         
         .section h2 {
@@ -222,7 +231,7 @@
         
         .summary-cards {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
+            grid-template-columns: 2fr 1fr 1fr;
             gap: 20px;
             margin-bottom: 30px;
         }
@@ -283,6 +292,11 @@
             font-size: 1.6em;
         }
         
+        .summary-card.combined-metrics .value {
+            font-size: 1em;
+            line-height: 1.3;
+        }
+        
         .summary-card.discount-card .value {
             font-size: 1em;
             line-height: 1.2;
@@ -320,10 +334,10 @@
         
         .filters-container {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             align-items: end;
             background: #f8f9fa;
-            padding: 15px 20px;
+            padding: 10px 15px;
             border-radius: 6px;
             flex-wrap: wrap;
             border: 1px solid #e9ecef;
@@ -332,26 +346,26 @@
         .filter-group {
             display: flex;
             flex-direction: column;
-            min-width: 160px;
+            min-width: 140px;
         }
         
         .filter-group label {
             font-weight: 500;
             color: #555;
-            margin-bottom: 4px;
-            font-size: 0.8em;
+            margin-bottom: 3px;
+            font-size: 0.75em;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         
         .filter-group select {
-            padding: 6px 10px;
+            padding: 4px 8px;
             border: 1px solid #ced4da;
             border-radius: 3px;
             background: white;
-            font-size: 13px;
+            font-size: 12px;
             color: #333;
-            height: 32px;
+            height: 28px;
         }
         
         .filter-group select:focus {
@@ -363,13 +377,13 @@
         .clear-filters-btn {
             background: #6c757d;
             color: white;
-            padding: 6px 12px;
+            padding: 4px 10px;
             border: none;
             border-radius: 3px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 11px;
             transition: background 0.3s ease;
-            height: 32px;
+            height: 28px;
         }
         
         .clear-filters-btn:hover {
@@ -379,13 +393,13 @@
         .quick-filter-btn {
             background: #667eea;
             color: white;
-            padding: 6px 12px;
+            padding: 4px 10px;
             border: none;
             border-radius: 3px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 11px;
             transition: background 0.3s ease;
-            height: 32px;
+            height: 28px;
         }
         
         .quick-filter-btn:hover {
@@ -662,29 +676,6 @@
             font-size: 1.2em;
         }
         
-        .target-status {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-        
-        .target-status.on-track {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .target-status.behind {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        
-        .target-status.ahead {
-            background: #cce5ff;
-            color: #004085;
-        }
-        
         .target-metrics {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -793,6 +784,101 @@
             color: #333;
             margin: 0 0 15px 0;
             font-size: 1.1em;
+        }
+        
+        /* Waterfall Chart Styles */
+        .waterfall-chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .waterfall-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 200px;
+            margin: 20px 0;
+            padding: 0 20px;
+            border-bottom: 2px solid #e9ecef;
+            position: relative;
+        }
+        
+        .waterfall-bar {
+            flex: 1;
+            margin: 0 5px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .waterfall-bar:hover {
+            transform: translateY(-2px);
+        }
+        
+        .waterfall-column {
+            border-radius: 4px 4px 0 0;
+            min-height: 5px;
+            width: 60px;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .waterfall-column.previous {
+            background: linear-gradient(180deg, #6c757d 0%, #495057 100%);
+        }
+        
+        .waterfall-column.order-impact {
+            background: linear-gradient(180deg, #007bff 0%, #0056b3 100%);
+        }
+        
+        .waterfall-column.value-impact {
+            background: linear-gradient(180deg, #28a745 0%, #1e7e34 100%);
+        }
+        
+        .waterfall-column.current {
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .waterfall-column.negative {
+            background: linear-gradient(180deg, #dc3545 0%, #c82333 100%);
+        }
+        
+        .waterfall-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            font-weight: 600;
+            color: #333;
+            white-space: nowrap;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2px 6px;
+            border-radius: 3px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .waterfall-label {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+            text-align: center;
+            line-height: 1.2;
+        }
+        
+        .waterfall-connector {
+            position: absolute;
+            height: 1px;
+            background: #ced4da;
+            border-style: dashed;
+            border-width: 1px 0 0 0;
+            z-index: 1;
         }
         
         /* Hidden section style */
@@ -946,7 +1032,7 @@
             }
             
             .summary-cards {
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: 1fr;
                 gap: 15px;
             }
             
@@ -960,6 +1046,10 @@
             
             .summary-card.secondary .value {
                 font-size: 1.4em;
+            }
+            
+            .summary-card.combined-metrics .value {
+                font-size: 0.9em;
             }
             
             .summary-card.discount-card .value {
@@ -1006,6 +1096,10 @@
             
             .summary-card .value {
                 font-size: 1.5em;
+            }
+            
+            .summary-card.combined-metrics .value {
+                font-size: 0.85em;
             }
             
             .summary-card.discount-card .value {
@@ -1070,6 +1164,24 @@
             
             .order-summary-item .value {
                 font-size: 1.1em;
+            }
+            
+            .waterfall-chart {
+                height: 150px;
+                padding: 0 10px;
+            }
+            
+            .waterfall-column {
+                width: 40px;
+            }
+            
+            .waterfall-value {
+                font-size: 9px;
+                top: -20px;
+            }
+            
+            .waterfall-label {
+                font-size: 10px;
             }
             
             /* Mobile Modal Improvements */
@@ -1206,6 +1318,11 @@
             <button class="tab" onclick="switchTab('Ria Wise')">Ria Wise</button>
         </div>
         
+        <!-- Sticky Filter Indicator -->
+        <div class="sticky-filter-indicator" id="stickyIndicator">
+            <span id="stickyIndicatorText">Team Total - All Data</span>
+        </div>
+        
         <div class="dashboard-content">
             <div class="loading" id="loading">
                 <h3>Loading dashboard data...</h3>
@@ -1232,7 +1349,7 @@
                         </div>
                         <div class="filter-group">
                             <label>&nbsp;</label> <!-- Spacer for alignment -->
-                            <div style="display: flex; gap: 10px;">
+                            <div style="display: flex; gap: 8px;">
                                 <button class="quick-filter-btn" onclick="setCurrentMonth()" title="View current month data">Current Month</button>
                                 <button class="quick-filter-btn" onclick="setPreviousMonth()" title="View previous month data">Previous Month</button>
                                 <button class="clear-filters-btn" onclick="clearFilters()">Clear All</button>
@@ -1247,7 +1364,7 @@
                 </div>
                 
                 <!-- Summary Cards -->
-                <div class="section">
+                <div class="section summary-section">
                     <h2>Summary</h2>
                     <p style="color: #666; margin-bottom: 15px; font-style: italic;">
                         💡 Click on Total Sales to view all order details
@@ -1283,9 +1400,10 @@
                     </div>
                 </div>
                 
-                <!-- Variance Analysis Table -->
+                <!-- Variance Analysis with Waterfall Chart -->
                 <div class="section">
                     <h2>Month-on-Month Variance Analysis</h2>
+                    <div id="waterfallChartsContainer"></div>
                     <div class="table-container">
                         <table id="varianceTable">
                             <thead>
@@ -1389,6 +1507,64 @@
                 "2025-12": 13200
             }
         };
+        
+        function getMonthlyTarget(salesRep, month) {
+            if (salesRep === 'team') {
+                // Calculate team target as sum of individual targets
+                const riaTarget = monthlyTargets["Ria Wise"][month] || 0;
+                const michaelTarget = monthlyTargets["Michael Bell"][month] || 0;
+                return riaTarget + michaelTarget;
+            }
+            
+            return monthlyTargets[salesRep] ? (monthlyTargets[salesRep][month] || 0) : 0;
+        }
+        
+        function getPerformanceStatus(actualSales, target) {
+            if (target === 0) return 'default';
+            
+            const performanceRatio = actualSales / target;
+            
+            if (performanceRatio >= 1.0) {
+                return 'excellent'; // At or above target
+            } else if (performanceRatio >= 0.8) {
+                return 'good'; // 80-99% of target
+            } else if (performanceRatio >= 0.6) {
+                return 'warning'; // 60-79% of target
+            } else {
+                return 'poor'; // Below 60% of target
+            }
+        }
+        
+        // Sticky indicator functionality
+        function updateStickyIndicator() {
+            const fyFilter = document.getElementById('fyFilter').value;
+            const monthFilter = document.getElementById('monthFilter').value;
+            
+            let indicatorText = currentTab === 'team' ? 'Team Total' : currentTab;
+            
+            if (monthFilter) {
+                indicatorText += ` - ${formatMonth(monthFilter)}`;
+            } else if (fyFilter) {
+                indicatorText += ` - ${fyFilter}`;
+            } else {
+                indicatorText += ' - All Data';
+            }
+            
+            document.getElementById('stickyIndicatorText').textContent = indicatorText;
+        }
+        
+        // Show/hide sticky indicator based on scroll position
+        window.addEventListener('scroll', function() {
+            const tabsContainer = document.querySelector('.tabs-container');
+            const stickyIndicator = document.getElementById('stickyIndicator');
+            const tabsRect = tabsContainer.getBoundingClientRect();
+            
+            if (tabsRect.bottom < 0) {
+                stickyIndicator.classList.add('visible');
+            } else {
+                stickyIndicator.classList.remove('visible');
+            }
+        });
         
         // Function to check if we should show target progress
         function shouldShowTargetProgress(summaryData) {
@@ -1557,7 +1733,9 @@
                         orderCountVariance: orderCountVariance,
                         avgOrderValueVariance: Math.round(avgOrderValueVariance * 100) / 100,
                         varianceDueToOrderCount: Math.round(varianceDueToOrderCount * 100) / 100,
-                        varianceDueToAvgOrderValue: Math.round(varianceDueToAvgOrderValue * 100) / 100
+                        varianceDueToAvgOrderValue: Math.round(varianceDueToAvgOrderValue * 100) / 100,
+                        previousTotalSales: previous.totalSales,
+                        currentTotalSales: current.totalSales
                     });
                 }
             });
@@ -1618,6 +1796,68 @@
                 style: 'currency',
                 currency: 'GBP'
             }).format(amount);
+        }
+        
+        function createWaterfallChart(varianceRow) {
+            const container = document.createElement('div');
+            container.className = 'waterfall-chart-container';
+            
+            const previousSales = varianceRow.previousTotalSales;
+            const orderCountImpact = varianceRow.varianceDueToOrderCount;
+            const avgOrderValueImpact = varianceRow.varianceDueToAvgOrderValue;
+            const currentSales = varianceRow.currentTotalSales;
+            
+            // Find max value for scaling
+            const maxValue = Math.max(
+                Math.abs(previousSales),
+                Math.abs(currentSales),
+                Math.abs(orderCountImpact),
+                Math.abs(avgOrderValueImpact)
+            );
+            
+            const getHeight = (value) => {
+                return Math.max((Math.abs(value) / maxValue) * 150, 5); // Minimum 5px height
+            };
+            
+            container.innerHTML = `
+                <h4 style="margin-bottom: 15px; color: #333;">${varianceRow.salesRep}: ${formatMonth(varianceRow.previousMonth)} → ${formatMonth(varianceRow.currentMonth)}</h4>
+                <div class="waterfall-chart">
+                    <div class="waterfall-bar">
+                        <div class="waterfall-column previous" style="height: ${getHeight(previousSales)}px;">
+                            <div class="waterfall-value">${formatCurrency(previousSales)}</div>
+                        </div>
+                        <div class="waterfall-label">Previous Month</div>
+                    </div>
+                    
+                    <div class="waterfall-bar">
+                        <div class="waterfall-column ${orderCountImpact >= 0 ? 'order-impact' : 'negative'}" 
+                             style="height: ${getHeight(orderCountImpact)}px;">
+                            <div class="waterfall-value">${orderCountImpact >= 0 ? '+' : ''}${formatCurrency(orderCountImpact)}</div>
+                        </div>
+                        <div class="waterfall-label">Order Count Impact</div>
+                    </div>
+                    
+                    <div class="waterfall-bar">
+                        <div class="waterfall-column ${avgOrderValueImpact >= 0 ? 'value-impact' : 'negative'}" 
+                             style="height: ${getHeight(avgOrderValueImpact)}px;">
+                            <div class="waterfall-value">${avgOrderValueImpact >= 0 ? '+' : ''}${formatCurrency(avgOrderValueImpact)}</div>
+                        </div>
+                        <div class="waterfall-label">Avg Order Value Impact</div>
+                    </div>
+                    
+                    <div class="waterfall-bar">
+                        <div class="waterfall-column current" style="height: ${getHeight(currentSales)}px;">
+                            <div class="waterfall-value">${formatCurrency(currentSales)}</div>
+                        </div>
+                        <div class="waterfall-label">Current Month</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 10px; font-size: 14px; color: #666;">
+                    <strong>Total Variance: ${varianceRow.totalSalesVariance >= 0 ? '+' : ''}${formatCurrency(varianceRow.totalSalesVariance)}</strong>
+                </div>
+            `;
+            
+            return container;
         }
         
         function showOrderDetails(salesRep, month) {
@@ -1968,8 +2208,7 @@
                         <div class="time-progress-indicator" style="left: ${Math.min(targetProgress.team.timeProgressPercent, 100)}%"></div>
                     </div>
                     <div class="progress-text">
-                        Overall Status: <strong style="text-transform: capitalize;">${targetProgress.team.status.replace('-', ' ')}</strong> 
-                        (${targetProgress.team.timeProgressPercent}% of time elapsed)
+                        ${targetProgress.team.timeProgressPercent}% of time elapsed - Overall performance is <strong style="text-transform: capitalize;">${targetProgress.team.status.replace('-', ' ')}</strong>
                     </div>
                 `;
                 
@@ -1990,7 +2229,6 @@
                     card.innerHTML = `
                         <div class="target-header">
                             <h3>${currentTab}</h3>
-                            <span class="target-status ${rep.status}">${rep.status.replace('-', ' ')}</span>
                         </div>
                         
                         <div class="target-metrics">
@@ -2305,6 +2543,9 @@
                     dashboardData.uniqueFYs
             };
             
+            // Update sticky indicator
+            updateStickyIndicator();
+            
             // Update display
             updateFilteredDisplay();
         }
@@ -2430,8 +2671,26 @@
             populatePerformanceTable(filteredData.summaryData);
             populateVarianceTable(filteredData.varianceData);
             
+            // Update waterfall charts
+            updateWaterfallCharts(filteredData.varianceData);
+            
             // Update rolling 6-month chart
             updateRolling6MonthChart();
+        }
+        
+        function updateWaterfallCharts(varianceData) {
+            const container = document.getElementById('waterfallChartsContainer');
+            container.innerHTML = '';
+            
+            if (varianceData.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center; padding: 20px; font-style: italic;">No variance data available for waterfall analysis</p>';
+                return;
+            }
+            
+            varianceData.forEach(row => {
+                const chart = createWaterfallChart(row);
+                container.appendChild(chart);
+            });
         }
         
         function getRolling6MonthData() {
@@ -2628,8 +2887,22 @@
             
             const cards = [
                 { title: 'Total Sales', value: formatCurrency(totalSales), class: `total-sales ${performanceStatus}` },
-                { title: 'Total Orders', value: totalOrders.toLocaleString(), class: 'secondary' },
-                { title: 'Average Order Value', value: formatCurrency(avgOrderValueOverall), class: 'secondary' },
+                { 
+                    title: 'Orders & Average Value', 
+                    value: `
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 0.7em; color: #666; font-weight: normal;">Orders:</span>
+                                <span style="font-size: 1.4em;">${totalOrders.toLocaleString()}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 0.7em; color: #666; font-weight: normal;">Avg Value:</span>
+                                <span style="font-size: 1.2em;">${formatCurrency(avgOrderValueOverall)}</span>
+                            </div>
+                        </div>
+                    `, 
+                    class: 'secondary combined-metrics' 
+                },
                 { 
                     title: 'Discount Metrics', 
                     value: `
@@ -2803,14 +3076,14 @@
                     {"salesRep":"Ria Wise","month":"2025-07","financialYear":"FY25/26","totalSales":44450,"orderCount":3,"avgOrderValue":14816.67}
                 ],
                 varianceData: [
-                    {"salesRep":"Michael Bell","currentMonth":"2025-04","previousMonth":"2025-03","totalSalesVariance":6813.58,"orderCountVariance":7,"avgOrderValueVariance":233.22,"varianceDueToOrderCount":4248.16,"varianceDueToAvgOrderValue":2565.42},
-                    {"salesRep":"Michael Bell","currentMonth":"2025-05","previousMonth":"2025-04","totalSalesVariance":221.42,"orderCountVariance":1,"avgOrderValueVariance":-51.56,"varianceDueToOrderCount":840.1,"varianceDueToAvgOrderValue":-618.72},
-                    {"salesRep":"Michael Bell","currentMonth":"2025-06","previousMonth":"2025-05","totalSalesVariance":11573.49,"orderCountVariance":7,"avgOrderValueVariance":318.62,"varianceDueToOrderCount":5519.78,"varianceDueToAvgOrderValue":6053.78},
-                    {"salesRep":"Michael Bell","currentMonth":"2025-07","previousMonth":"2025-06","totalSalesVariance":6414.01,"orderCountVariance":-16,"avgOrderValueVariance":8042.84,"varianceDueToOrderCount":-17714.56,"varianceDueToAvgOrderValue":24128.52},
-                    {"salesRep":"Ria Wise","currentMonth":"2025-04","previousMonth":"2025-03","totalSalesVariance":4404.15,"orderCountVariance":4,"avgOrderValueVariance":38.18,"varianceDueToOrderCount":3716.92,"varianceDueToAvgOrderValue":687.24},
-                    {"salesRep":"Ria Wise","currentMonth":"2025-05","previousMonth":"2025-04","totalSalesVariance":-1952.46,"orderCountVariance":-3,"avgOrderValueVariance":63.31,"varianceDueToOrderCount":-2902.23,"varianceDueToAvgOrderValue":949.65},
-                    {"salesRep":"Ria Wise","currentMonth":"2025-06","previousMonth":"2025-05","totalSalesVariance":8170.79,"orderCountVariance":6,"avgOrderValueVariance":94.6,"varianceDueToOrderCount":6184.32,"varianceDueToAvgOrderValue":1986.6},
-                    {"salesRep":"Ria Wise","currentMonth":"2025-07","previousMonth":"2025-06","totalSalesVariance":20818.35,"orderCountVariance":-18,"avgOrderValueVariance":13691.35,"varianceDueToOrderCount":-20255.76,"varianceDueToAvgOrderValue":41074.1}
+                    {"salesRep":"Michael Bell","currentMonth":"2025-04","previousMonth":"2025-03","totalSalesVariance":6813.58,"orderCountVariance":7,"avgOrderValueVariance":233.22,"varianceDueToOrderCount":4248.16,"varianceDueToAvgOrderValue":2565.42,"previousTotalSales":2427.5,"currentTotalSales":9241.08},
+                    {"salesRep":"Michael Bell","currentMonth":"2025-05","previousMonth":"2025-04","totalSalesVariance":221.42,"orderCountVariance":1,"avgOrderValueVariance":-51.56,"varianceDueToOrderCount":840.1,"varianceDueToAvgOrderValue":-618.72,"previousTotalSales":9241.08,"currentTotalSales":9462.5},
+                    {"salesRep":"Michael Bell","currentMonth":"2025-06","previousMonth":"2025-05","totalSalesVariance":11573.49,"orderCountVariance":7,"avgOrderValueVariance":318.62,"varianceDueToOrderCount":5519.78,"varianceDueToAvgOrderValue":6053.78,"previousTotalSales":9462.5,"currentTotalSales":21035.99},
+                    {"salesRep":"Michael Bell","currentMonth":"2025-07","previousMonth":"2025-06","totalSalesVariance":6414.01,"orderCountVariance":-16,"avgOrderValueVariance":8042.84,"varianceDueToOrderCount":-17714.56,"varianceDueToAvgOrderValue":24128.52,"previousTotalSales":21035.99,"currentTotalSales":27450},
+                    {"salesRep":"Ria Wise","currentMonth":"2025-04","previousMonth":"2025-03","totalSalesVariance":4404.15,"orderCountVariance":4,"avgOrderValueVariance":38.18,"varianceDueToOrderCount":3716.92,"varianceDueToAvgOrderValue":687.24,"previousTotalSales":13009.17,"currentTotalSales":17413.32},
+                    {"salesRep":"Ria Wise","currentMonth":"2025-05","previousMonth":"2025-04","totalSalesVariance":-1952.46,"orderCountVariance":-3,"avgOrderValueVariance":63.31,"varianceDueToOrderCount":-2902.23,"varianceDueToAvgOrderValue":949.65,"previousTotalSales":17413.32,"currentTotalSales":15460.86},
+                    {"salesRep":"Ria Wise","currentMonth":"2025-06","previousMonth":"2025-05","totalSalesVariance":8170.79,"orderCountVariance":6,"avgOrderValueVariance":94.6,"varianceDueToOrderCount":6184.32,"varianceDueToAvgOrderValue":1986.6,"previousTotalSales":15460.86,"currentTotalSales":23631.65},
+                    {"salesRep":"Ria Wise","currentMonth":"2025-07","previousMonth":"2025-06","totalSalesVariance":20818.35,"orderCountVariance":-18,"avgOrderValueVariance":13691.35,"varianceDueToOrderCount":-20255.76,"varianceDueToAvgOrderValue":41074.1,"previousTotalSales":23631.65,"currentTotalSales":44450}
                 ],
                 uniqueMonths: ["2025-03","2025-04","2025-05","2025-06","2025-07"],
                 uniqueSalesReps: ["Adam Bell","Michael Bell","Ria Wise"],
