@@ -13,7 +13,7 @@ Ria Wise,11/03/2025,Invoice,13229,"Steed, Karen",1954 Steed,Supply and fit,Sales
 Ria Wise,11/03/2025,Invoice,13230,Kurt Connor Sartorius,1956 Sartorius,Supply and fit,Sales,295.83
 Ria Wise,12/03/2025,Invoice,13227,Keerphy Paradesi,1967 Paradesi,Supply and fit,Sales,"1,291.67"
 Ria Wise,18/03/2025,Invoice,13233,"Pereira, Crizal",1965 Pereira,Supply and fit,Sales,510.00
-Ria Wise,19/03/2025,Invoice,13231,Beryl Burt,1970 Burt (Shutters),Supply and fit,Sales,"1,800.00"
+Ria Wise,19/03/2025,Invoice,13231,Beryl Burt,1970 Burt (Shutters),Supply and fit - Shutters,Sales - Shutters,"1,800.00"
 Ria Wise,19/03/2025,Invoice,13232,Beryl Burt,1970 Burt (Blinds),Supply and fit,Sales,700.00
 Ria Wise,22/03/2025,Invoice,13234,Richard Haynes,1981 Haynes (Shutters),Supply and fit - Shutters,Sales - Shutters,"1,365.83"
 Ria Wise,22/03/2025,Invoice,13235,Richard Haynes,1981 Haynes (Blinds),Supply and fit,Sales,809.17
@@ -139,8 +139,10 @@ Ria Wise,01/07/2025,Invoice,13347,"Elliott, Deborah & Mike",2162 Elliot,Supply a
 Ria Wise,04/07/2025,Invoice,13348,Carol White,2149 White (3 x verticals),Supply and fit,Sales,333.33
 Ria Wise,07/07/2025,Invoice,13350,"Pereira, Crizal",1965 Pereira,Supply and fit,Sales,262.50
 Ria Wise,07/07/2025,Invoice,13350,"Pereira, Crizal",,Voucher,Promotional Discounts,-16.67
-Ria Wise,07/07/2025,Invoice,13351,"Kipasa, Kenny",2169 Kipasa,Supply and fit,Sales,336.67
+Ria Wise,07/07/2025,Invoice,13351,"Kipasa, Kenny",2169 Kipasa,Supply and fit,Sales,639.17
+Ria Wise,07/07/2025,Invoice,13351,"Kipasa, Kenny",Discount,Discretionary Discount,Discretionary Discounts,-10.83
+Michael Bell,07/07/2025,Invoice,13352,Yana Maslova,2124 Maslova,Supply and fit,Sales,324.17
 
 
 
-" Monday, July 07, 2025 03:18 PM GMTZ",,,,,,,,
+" Tuesday, July 08, 2025 09:13 AM GMTZ",,,,,,,,
