@@ -786,8 +786,8 @@
             font-size: 1.1em;
         }
         
-        /* Waterfall Chart Styles */
-        .waterfall-chart-container {
+        /* Variance Equation Styles */
+        .variance-equation-container {
             background: white;
             border-radius: 8px;
             padding: 25px;
@@ -795,90 +795,62 @@
             margin-bottom: 20px;
         }
         
-        .waterfall-chart {
+        .variance-equation {
             display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            height: 200px;
-            margin: 20px 0;
-            padding: 0 20px;
-            border-bottom: 2px solid #e9ecef;
-            position: relative;
-        }
-        
-        .waterfall-bar {
-            flex: 1;
-            margin: 0 5px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
             align-items: center;
-            transition: all 0.3s ease;
-        }
-        
-        .waterfall-bar:hover {
-            transform: translateY(-2px);
-        }
-        
-        .waterfall-column {
-            border-radius: 4px 4px 0 0;
-            min-height: 5px;
-            width: 60px;
-            position: relative;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .waterfall-column.previous {
-            background: linear-gradient(180deg, #6c757d 0%, #495057 100%);
-        }
-        
-        .waterfall-column.order-impact {
-            background: linear-gradient(180deg, #007bff 0%, #0056b3 100%);
-        }
-        
-        .waterfall-column.value-impact {
-            background: linear-gradient(180deg, #28a745 0%, #1e7e34 100%);
-        }
-        
-        .waterfall-column.current {
-            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .waterfall-column.negative {
-            background: linear-gradient(180deg, #dc3545 0%, #c82333 100%);
-        }
-        
-        .waterfall-value {
-            position: absolute;
-            top: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 11px;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 16px;
             font-weight: 600;
-            color: #333;
-            white-space: nowrap;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 2px 6px;
-            border-radius: 3px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
-        .waterfall-label {
-            margin-top: 10px;
+        .equation-term {
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+        
+        .equation-term.previous {
+            color: #6c757d;
+        }
+        
+        .equation-term.operator {
+            font-size: 20px;
+            color: #333;
+            margin: 0 5px;
+        }
+        
+        .equation-term.positive {
+            color: #28a745;
+        }
+        
+        .equation-term.negative {
+            color: #dc3545;
+        }
+        
+        .equation-term.current {
+            color: #667eea;
+            font-weight: 700;
+        }
+        
+        .equation-term.equals {
+            font-size: 24px;
+            color: #333;
+            margin: 0 10px;
+        }
+        
+        .equation-label {
             font-size: 12px;
             color: #666;
-            font-weight: 500;
+            font-weight: normal;
+            display: block;
+            margin-top: 4px;
             text-align: center;
-            line-height: 1.2;
-        }
-        
-        .waterfall-connector {
-            position: absolute;
-            height: 1px;
-            background: #ced4da;
-            border-style: dashed;
-            border-width: 1px 0 0 0;
-            z-index: 1;
         }
         
         /* Hidden section style */
@@ -1166,22 +1138,25 @@
                 font-size: 1.1em;
             }
             
-            .waterfall-chart {
-                height: 150px;
-                padding: 0 10px;
+            .variance-equation {
+                flex-direction: column;
+                gap: 10px;
+                padding: 15px;
+                font-size: 14px;
             }
             
-            .waterfall-column {
-                width: 40px;
+            .equation-term {
+                justify-content: center;
+                text-align: center;
             }
             
-            .waterfall-value {
-                font-size: 9px;
-                top: -20px;
+            .equation-term.operator,
+            .equation-term.equals {
+                font-size: 18px;
             }
             
-            .waterfall-label {
-                font-size: 10px;
+            .equation-label {
+                font-size: 11px;
             }
             
             /* Mobile Modal Improvements */
@@ -1295,6 +1270,25 @@
             .orders-table table {
                 min-width: 550px;
             }
+            
+            .variance-equation-container {
+                padding: 15px;
+            }
+            
+            .variance-equation {
+                font-size: 12px;
+                padding: 12px;
+                gap: 8px;
+            }
+            
+            .equation-term.operator,
+            .equation-term.equals {
+                font-size: 16px;
+            }
+            
+            .equation-label {
+                font-size: 10px;
+            }
         }
     </style>
 </head>
@@ -1400,7 +1394,7 @@
                     </div>
                 </div>
                 
-                <!-- Variance Analysis with Waterfall Chart -->
+                <!-- Variance Analysis -->
                 <div class="section">
                     <h2>Month-on-Month Variance Analysis</h2>
                     <div id="waterfallChartsContainer"></div>
@@ -1798,58 +1792,48 @@
             }).format(amount);
         }
         
-        function createWaterfallChart(varianceRow) {
+        function createVarianceEquation(varianceRow) {
             const container = document.createElement('div');
-            container.className = 'waterfall-chart-container';
+            container.className = 'variance-equation-container';
             
             const previousSales = varianceRow.previousTotalSales;
             const orderCountImpact = varianceRow.varianceDueToOrderCount;
             const avgOrderValueImpact = varianceRow.varianceDueToAvgOrderValue;
             const currentSales = varianceRow.currentTotalSales;
             
-            // Find max value for scaling
-            const maxValue = Math.max(
-                Math.abs(previousSales),
-                Math.abs(currentSales),
-                Math.abs(orderCountImpact),
-                Math.abs(avgOrderValueImpact)
-            );
+            const orderCountClass = orderCountImpact >= 0 ? 'positive' : 'negative';
+            const avgOrderValueClass = avgOrderValueImpact >= 0 ? 'positive' : 'negative';
             
-            const getHeight = (value) => {
-                return Math.max((Math.abs(value) / maxValue) * 150, 5); // Minimum 5px height
-            };
+            const orderCountOperator = orderCountImpact >= 0 ? '+' : '';
+            const avgOrderValueOperator = avgOrderValueImpact >= 0 ? '+' : '';
             
             container.innerHTML = `
                 <h4 style="margin-bottom: 15px; color: #333;">${varianceRow.salesRep}: ${formatMonth(varianceRow.previousMonth)} → ${formatMonth(varianceRow.currentMonth)}</h4>
-                <div class="waterfall-chart">
-                    <div class="waterfall-bar">
-                        <div class="waterfall-column previous" style="height: ${getHeight(previousSales)}px;">
-                            <div class="waterfall-value">${formatCurrency(previousSales)}</div>
-                        </div>
-                        <div class="waterfall-label">Previous Month</div>
+                <div class="variance-equation">
+                    <div class="equation-term previous">
+                        ${formatCurrency(previousSales)}
+                        <span class="equation-label">Previous Month</span>
                     </div>
                     
-                    <div class="waterfall-bar">
-                        <div class="waterfall-column ${orderCountImpact >= 0 ? 'order-impact' : 'negative'}" 
-                             style="height: ${getHeight(orderCountImpact)}px;">
-                            <div class="waterfall-value">${orderCountImpact >= 0 ? '+' : ''}${formatCurrency(orderCountImpact)}</div>
-                        </div>
-                        <div class="waterfall-label">Order Count Impact</div>
+                    <div class="equation-term operator">+</div>
+                    
+                    <div class="equation-term ${orderCountClass}">
+                        ${orderCountOperator}${formatCurrency(orderCountImpact)}
+                        <span class="equation-label">Order Count Impact</span>
                     </div>
                     
-                    <div class="waterfall-bar">
-                        <div class="waterfall-column ${avgOrderValueImpact >= 0 ? 'value-impact' : 'negative'}" 
-                             style="height: ${getHeight(avgOrderValueImpact)}px;">
-                            <div class="waterfall-value">${avgOrderValueImpact >= 0 ? '+' : ''}${formatCurrency(avgOrderValueImpact)}</div>
-                        </div>
-                        <div class="waterfall-label">Avg Order Value Impact</div>
+                    <div class="equation-term operator">+</div>
+                    
+                    <div class="equation-term ${avgOrderValueClass}">
+                        ${avgOrderValueOperator}${formatCurrency(avgOrderValueImpact)}
+                        <span class="equation-label">Avg Order Value Impact</span>
                     </div>
                     
-                    <div class="waterfall-bar">
-                        <div class="waterfall-column current" style="height: ${getHeight(currentSales)}px;">
-                            <div class="waterfall-value">${formatCurrency(currentSales)}</div>
-                        </div>
-                        <div class="waterfall-label">Current Month</div>
+                    <div class="equation-term equals">=</div>
+                    
+                    <div class="equation-term current">
+                        ${formatCurrency(currentSales)}
+                        <span class="equation-label">Current Month</span>
                     </div>
                 </div>
                 <div style="text-align: center; margin-top: 10px; font-size: 14px; color: #666;">
@@ -2671,11 +2655,59 @@
             populatePerformanceTable(filteredData.summaryData);
             populateVarianceTable(filteredData.varianceData);
             
-            // Update waterfall charts
+            // Update variance equations
             updateWaterfallCharts(filteredData.varianceData);
             
             // Update rolling 6-month chart
             updateRolling6MonthChart();
+        }
+        
+        function calculateTeamVarianceData(varianceData) {
+            // Group variance data by current month
+            const monthGroups = _.groupBy(varianceData, 'currentMonth');
+            const teamVarianceData = [];
+            
+            Object.keys(monthGroups).forEach(month => {
+                const monthData = monthGroups[month];
+                
+                // Calculate team totals for current and previous months
+                const totalCurrentSales = _.sumBy(monthData, 'currentTotalSales');
+                const totalPreviousSales = _.sumBy(monthData, 'previousTotalSales');
+                const totalSalesVariance = _.sumBy(monthData, 'totalSalesVariance');
+                const totalOrderCountVariance = _.sumBy(monthData, 'orderCountVariance');
+                const totalVarianceDueToOrderCount = _.sumBy(monthData, 'varianceDueToOrderCount');
+                const totalVarianceDueToAvgOrderValue = _.sumBy(monthData, 'varianceDueToAvgOrderValue');
+                
+                // Calculate team average order value variance
+                const teamPreviousOrderCount = monthData.reduce((sum, item) => {
+                    return sum + (item.previousTotalSales / (item.previousTotalSales / item.orderCountVariance + item.orderCountVariance || 1));
+                }, 0);
+                const teamCurrentOrderCount = monthData.reduce((sum, item) => {
+                    return sum + (item.currentTotalSales / (item.currentTotalSales / (item.orderCountVariance + teamPreviousOrderCount) || 1));
+                }, 0);
+                
+                const teamPreviousAvgOrderValue = totalPreviousSales / (teamPreviousOrderCount || 1);
+                const teamCurrentAvgOrderValue = totalCurrentSales / (teamCurrentOrderCount || 1);
+                const teamAvgOrderValueVariance = teamCurrentAvgOrderValue - teamPreviousAvgOrderValue;
+                
+                // Use the previous month from the first item (they should all be the same)
+                const previousMonth = monthData[0].previousMonth;
+                
+                teamVarianceData.push({
+                    salesRep: 'Team Total',
+                    currentMonth: month,
+                    previousMonth: previousMonth,
+                    totalSalesVariance: Math.round(totalSalesVariance * 100) / 100,
+                    orderCountVariance: totalOrderCountVariance,
+                    avgOrderValueVariance: Math.round(teamAvgOrderValueVariance * 100) / 100,
+                    varianceDueToOrderCount: Math.round(totalVarianceDueToOrderCount * 100) / 100,
+                    varianceDueToAvgOrderValue: Math.round(totalVarianceDueToAvgOrderValue * 100) / 100,
+                    previousTotalSales: Math.round(totalPreviousSales * 100) / 100,
+                    currentTotalSales: Math.round(totalCurrentSales * 100) / 100
+                });
+            });
+            
+            return teamVarianceData.sort((a, b) => a.currentMonth.localeCompare(b.currentMonth));
         }
         
         function updateWaterfallCharts(varianceData) {
@@ -2683,13 +2715,20 @@
             container.innerHTML = '';
             
             if (varianceData.length === 0) {
-                container.innerHTML = '<p style="color: #666; text-align: center; padding: 20px; font-style: italic;">No variance data available for waterfall analysis</p>';
+                container.innerHTML = '<p style="color: #666; text-align: center; padding: 20px; font-style: italic;">No variance data available for analysis</p>';
                 return;
             }
             
-            varianceData.forEach(row => {
-                const chart = createWaterfallChart(row);
-                container.appendChild(chart);
+            let dataToShow = varianceData;
+            
+            // If team tab is selected, calculate and show team totals
+            if (currentTab === 'team') {
+                dataToShow = calculateTeamVarianceData(varianceData);
+            }
+            
+            dataToShow.forEach(row => {
+                const equation = createVarianceEquation(row);
+                container.appendChild(equation);
             });
         }
         
@@ -2967,7 +3006,14 @@
                 return;
             }
             
-            varianceData.forEach(row => {
+            let dataToShow = varianceData;
+            
+            // If team tab is selected, calculate and show team totals
+            if (currentTab === 'team') {
+                dataToShow = calculateTeamVarianceData(varianceData);
+            }
+            
+            dataToShow.forEach(row => {
                 const tr = document.createElement('tr');
                 
                 const formatVariance = (value) => {
