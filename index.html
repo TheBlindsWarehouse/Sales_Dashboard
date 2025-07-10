@@ -3059,7 +3059,16 @@
                     throw new Error('Papa Parse library failed to load');
                 }
                 
-                const response = await fetch('sales-data.csv');
+                // Add cache-busting parameter to prevent browser caching
+                const cacheBuster = new Date().getTime();
+                const response = await fetch(`sales-data.csv?v=${cacheBuster}`, {
+                    cache: 'no-cache',
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    }
+                });
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
