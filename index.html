@@ -2669,29 +2669,29 @@
             
             Object.keys(monthGroups).forEach(month => {
                 const monthData = monthGroups[month];
+                const previousMonth = monthData[0].previousMonth;
                 
                 // Calculate team totals for current and previous months
                 const totalCurrentSales = _.sumBy(monthData, 'currentTotalSales');
                 const totalPreviousSales = _.sumBy(monthData, 'previousTotalSales');
                 const totalSalesVariance = _.sumBy(monthData, 'totalSalesVariance');
                 const totalOrderCountVariance = _.sumBy(monthData, 'orderCountVariance');
-                const totalVarianceDueToOrderCount = _.sumBy(monthData, 'varianceDueToOrderCount');
-                const totalVarianceDueToAvgOrderValue = _.sumBy(monthData, 'varianceDueToAvgOrderValue');
                 
-                // Calculate team average order value variance
-                const teamPreviousOrderCount = monthData.reduce((sum, item) => {
-                    return sum + (item.previousTotalSales / (item.previousTotalSales / item.orderCountVariance + item.orderCountVariance || 1));
-                }, 0);
-                const teamCurrentOrderCount = monthData.reduce((sum, item) => {
-                    return sum + (item.currentTotalSales / (item.currentTotalSales / (item.orderCountVariance + teamPreviousOrderCount) || 1));
-                }, 0);
+                // Get actual order counts from the original summary data
+                const currentMonthSummary = dashboardData.summaryData.filter(item => item.month === month);
+                const previousMonthSummary = dashboardData.summaryData.filter(item => item.month === previousMonth);
                 
-                const teamPreviousAvgOrderValue = totalPreviousSales / (teamPreviousOrderCount || 1);
-                const teamCurrentAvgOrderValue = totalCurrentSales / (teamCurrentOrderCount || 1);
+                const teamCurrentOrderCount = _.sumBy(currentMonthSummary, 'orderCount');
+                const teamPreviousOrderCount = _.sumBy(previousMonthSummary, 'orderCount');
+                
+                // Calculate team average order values
+                const teamPreviousAvgOrderValue = teamPreviousOrderCount > 0 ? totalPreviousSales / teamPreviousOrderCount : 0;
+                const teamCurrentAvgOrderValue = teamCurrentOrderCount > 0 ? totalCurrentSales / teamCurrentOrderCount : 0;
                 const teamAvgOrderValueVariance = teamCurrentAvgOrderValue - teamPreviousAvgOrderValue;
                 
-                // Use the previous month from the first item (they should all be the same)
-                const previousMonth = monthData[0].previousMonth;
+                // Calculate variance components correctly for team
+                const teamVarianceDueToOrderCount = totalOrderCountVariance * teamPreviousAvgOrderValue;
+                const teamVarianceDueToAvgOrderValue = teamCurrentOrderCount * teamAvgOrderValueVariance;
                 
                 teamVarianceData.push({
                     salesRep: 'Team Total',
@@ -2700,8 +2700,8 @@
                     totalSalesVariance: Math.round(totalSalesVariance * 100) / 100,
                     orderCountVariance: totalOrderCountVariance,
                     avgOrderValueVariance: Math.round(teamAvgOrderValueVariance * 100) / 100,
-                    varianceDueToOrderCount: Math.round(totalVarianceDueToOrderCount * 100) / 100,
-                    varianceDueToAvgOrderValue: Math.round(totalVarianceDueToAvgOrderValue * 100) / 100,
+                    varianceDueToOrderCount: Math.round(teamVarianceDueToOrderCount * 100) / 100,
+                    varianceDueToAvgOrderValue: Math.round(teamVarianceDueToAvgOrderValue * 100) / 100,
                     previousTotalSales: Math.round(totalPreviousSales * 100) / 100,
                     currentTotalSales: Math.round(totalCurrentSales * 100) / 100
                 });
