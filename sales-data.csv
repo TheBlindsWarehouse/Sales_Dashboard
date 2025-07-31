@@ -2,7 +2,7 @@ Sales Report - Dashboard Data,,,,,,,,
 The Blinds Warehouse (t/a NEW HOME BLINDS),,,,,,,,
 "March 1-July 31, 2025",,,,,,,,
 
-Sales Rep,Transaction date,Transaction type,No.,Customer,Line description,Product/Service,Distribution account,Amount
+Sales Rep,Transaction date,Transaction type,No.,Customer,Memo/Description,Product/Service,Distribution account,Amount
 Ria Wise,01/03/2025,Invoice,13222,Sebastian Szczakiel,1943 Szczakiel,Supply and fit,Sales,649.17
 Michael Bell,03/03/2025,Invoice,13225,"Gillies, Charlotte & Mat",1937 Gillies,Supply and fit,Sales,761.67
 Michael Bell,04/03/2025,Invoice,13223,Timmith Hill,1949 Hill,Supply and fit,Sales,124.17
@@ -149,10 +149,17 @@ Ria Wise,09/07/2025,Invoice,13354,"Deed, Marie",2178 Deed,Supply and fit,Sales,2
 Ria Wise,09/07/2025,Invoice,13355,Gassimou Barry,2180 Barry,Supply and fit,Sales,342.50
 Ria Wise,09/07/2025,Invoice,13358,"Payne, Claire",2184 Payne,Supply and fit,Sales,458.33
 Ria Wise,10/07/2025,Invoice,13359,Nicholas Holland,2170 Holland,Supply and fit,Sales,871.67
+Ria Wise,10/07/2025,Invoice,13359,Nicholas Holland,Fitting 3 x curtain poles supplied by customer,Fitting,Sales,87.50
 Michael Bell,11/07/2025,Invoice,13360,Emma Zieba,2173 Zieba,Supply and fit,Sales,"1,245.00"
 Michael Bell,13/07/2025,Invoice,13361,"Satish, Kavya",2191 Satish,Supply and fit,Sales,"1,501.67"
 Ria Wise,14/07/2025,Invoice,13362,"Zimbango, Douglas",2190 Zimbango,Supply and fit,Sales,550.00
+Ria Wise,14/07/2025,Invoice,13363,Anthony Chitolie,2181 Chitolie,Supply and fit,Sales,"6,083.33"
+Ria Wise,14/07/2025,Invoice,13364,Sav Cammarata,2189 Cammarata,Supply and fit,Sales,165.83
+Ria Wise,18/07/2025,Invoice,13366,"Wilcock, Lindsey",2198 Wilcock,Supply and fit,Sales,112.50
+Ria Wise,24/07/2025,Invoice,13365,Ogechi Ogunfowokan,2203 Ogunfowokan,Supply and fit,Sales,321.67
+Ria Wise,28/07/2025,Invoice,13367,Gleeson Developments Limited,"2202 Gleeson 
+(Plot 62 Tulip Fields)",Supply and fit,Sales,845.00
 
 
 
-" Monday, July 14, 2025 12:43 PM GMTZ",,,,,,,,
+" Thursday, July 31, 2025 09:13 AM GMTZ",,,,,,,,
