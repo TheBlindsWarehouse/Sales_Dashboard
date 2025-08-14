@@ -1,6 +1,6 @@
 Sales Report - Dashboard Data,,,,,,,,
 The Blinds Warehouse (t/a NEW HOME BLINDS),,,,,,,,
-"March 1-August 7, 2025",,,,,,,,
+"March 1-August 14, 2025",,,,,,,,
 
 Sales Rep,Transaction date,Transaction type,No.,Customer,Memo/Description,Product/Service,Distribution account,Amount
 Ria Wise,01/03/2025,Invoice,13222,Sebastian Szczakiel,1943 Szczakiel,Supply and fit,Sales,649.17
@@ -166,7 +166,21 @@ Michael Bell,01/08/2025,Invoice,13371,"Town, Ian",2212 Town,Supply and fit,Sales
 Ria Wise,01/08/2025,Invoice,13372,Aija Rimsane,2213 Rimsane,Supply and fit,Sales,389.17
 Ria Wise,04/08/2025,Invoice,13370,"Ludgate, Jade & Sam",2177 Ludgate (Perfect Fits only),Supply and fit,Sales,448.33
 Ria Wise,04/08/2025,Invoice,13373,"Ade-Johnson, Ayadele",2220 Ade-Johnson,Supply and fit,Sales,196.67
+Ria Wise,07/08/2025,Invoice,13376,Enock Morgan,2224 Morgan,Supply and fit,Sales,792.50
+Ria Wise,08/08/2025,Invoice,13374,Jenny Pettis,2238 Pettis,Supply and fit,Sales,596.67
+Ria Wise,08/08/2025,Invoice,13375,"Harbron, Kevin",2233 Harbron,Supply and fit,Sales,"1,235.83"
+Michael Bell,08/08/2025,Invoice,13379,Albert  Sampong,2229 Sambong,Supply and fit,Sales,"1,790.83"
+Ria Wise,08/08/2025,Invoice,13380,Ana Obrien,2236 OBrien,Supply and fit,Sales,433.33
+Ria Wise,08/08/2025,Invoice,13381,Safir Hussain,2230 Hussain,Supply and fit,Sales,"1,035.00"
+Ria Wise,11/08/2025,Invoice,13382,"Teuma, Agnese",2201 Teuma,Supply and fit,Sales,216.67
+Adam Bell,12/08/2025,Invoice,13377,"Ferriday, Janette","2252 Ferriday
+1 x Velux blind
+GGL 4 / 056G 11 C
+Light Taupe Blackout, Brushed Aluminium, Manual",Supply and fit,Sales,130.00
+N/A,12/08/2025,Invoice,13378,Allison Homes,"2240 Allison Homes 
+(Plot 316 Kings Meadow)",Supply and fit,Sales,"1,250.00"
+Ria Wise,13/08/2025,Invoice,13383,"Zimbango, Douglas",2190 Zimbango (part 2),Supply and fit,Sales,350.00
 
 
 
-" Thursday, August 07, 2025 12:03 PM GMTZ",,,,,,,,
+" Thursday, August 14, 2025 11:08 AM GMTZ",,,,,,,,
