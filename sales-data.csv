@@ -1,6 +1,6 @@
 Sales Report - Dashboard Data,,,,,,,,
 The Blinds Warehouse (t/a NEW HOME BLINDS),,,,,,,,
-"March 1-August 14, 2025",,,,,,,,
+"March 1-August 21, 2025",,,,,,,,
 
 Sales Rep,Transaction date,Transaction type,No.,Customer,Memo/Description,Product/Service,Distribution account,Amount
 Ria Wise,01/03/2025,Invoice,13222,Sebastian Szczakiel,1943 Szczakiel,Supply and fit,Sales,649.17
@@ -180,7 +180,16 @@ Light Taupe Blackout, Brushed Aluminium, Manual",Supply and fit,Sales,130.00
 N/A,12/08/2025,Invoice,13378,Allison Homes,"2240 Allison Homes 
 (Plot 316 Kings Meadow)",Supply and fit,Sales,"1,250.00"
 Ria Wise,13/08/2025,Invoice,13383,"Zimbango, Douglas",2190 Zimbango (part 2),Supply and fit,Sales,350.00
+Ria Wise,14/08/2025,Invoice,13387,"Short, Susan",2244 Short,Supply and fit,Sales,"2,100.00"
+Ria Wise,14/08/2025,Invoice,13387,"Short, Susan",,Discretionary Discount,Discretionary Discounts,-41.67
+Michael Bell,15/08/2025,Invoice,13386,Astrid Dahl,2257 Dahl,Supply and fit,Sales,444.17
+Ria Wise,18/08/2025,Invoice,13384,"Ihaza, Deborah",2248 Ihaza,Supply and fit,Sales,"1,028.33"
+Ria Wise,18/08/2025,Invoice,13384,"Ihaza, Deborah",,Discretionary Discount,Discretionary Discounts,-53.33
+Ria Wise,18/08/2025,Invoice,13385,"Siddat, Eliot & Raeesah",2225 Sidat,Supply and fit,Sales,733.33
+Ria Wise,18/08/2025,Invoice,13388,"Ojo, Shade",2211 Ojo,Supply and fit,Sales,190.83
+Michael Bell,19/08/2025,Invoice,13389,"Warrack, Sue",2263 Warrack,Supply and fit,Sales,497.50
+Michael Bell,20/08/2025,Invoice,13390,Dean Oakley,2260 Oakley,Supply and fit,Sales,"1,156.67"
 
 
 
-" Thursday, August 14, 2025 11:08 AM GMTZ",,,,,,,,
+" Thursday, August 21, 2025 10:02 AM GMTZ",,,,,,,,
