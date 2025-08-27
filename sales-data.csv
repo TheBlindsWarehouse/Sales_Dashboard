@@ -1,6 +1,6 @@
 Sales Report - Dashboard Data,,,,,,,,
 The Blinds Warehouse (t/a NEW HOME BLINDS),,,,,,,,
-"March 1-August 21, 2025",,,,,,,,
+"March 1-August 27, 2025",,,,,,,,
 
 Sales Rep,Transaction date,Transaction type,No.,Customer,Memo/Description,Product/Service,Distribution account,Amount
 Ria Wise,01/03/2025,Invoice,13222,Sebastian Szczakiel,1943 Szczakiel,Supply and fit,Sales,649.17
@@ -164,6 +164,8 @@ Michael Bell,31/07/2025,Invoice,13368,"Bai, Peizhen",2208 Bai,Supply and fit,Sal
 Michael Bell,31/07/2025,Invoice,13368,"Bai, Peizhen",,Discretionary Discount,Discretionary Discounts,-64.17
 Michael Bell,01/08/2025,Invoice,13371,"Town, Ian",2212 Town,Supply and fit,Sales,140.83
 Ria Wise,01/08/2025,Invoice,13372,Aija Rimsane,2213 Rimsane,Supply and fit,Sales,389.17
+Michael Bell,01/08/2025,Invoice,13392,Carol massey,2196 Massey (blinds),Supply and fit,Sales,660.00
+Michael Bell,01/08/2025,Invoice,13392,Carol massey,2196 Massey (shutters),Supply and fit - Shutters,Sales - Shutters,740.83
 Ria Wise,04/08/2025,Invoice,13370,"Ludgate, Jade & Sam",2177 Ludgate (Perfect Fits only),Supply and fit,Sales,448.33
 Ria Wise,04/08/2025,Invoice,13373,"Ade-Johnson, Ayadele",2220 Ade-Johnson,Supply and fit,Sales,196.67
 Ria Wise,07/08/2025,Invoice,13376,Enock Morgan,2224 Morgan,Supply and fit,Sales,792.50
@@ -177,7 +179,7 @@ Adam Bell,12/08/2025,Invoice,13377,"Ferriday, Janette","2252 Ferriday
 1 x Velux blind
 GGL 4 / 056G 11 C
 Light Taupe Blackout, Brushed Aluminium, Manual",Supply and fit,Sales,130.00
-N/A,12/08/2025,Invoice,13378,Allison Homes,"2240 Allison Homes 
+Ria Wise,12/08/2025,Invoice,13378,Allison Homes,"2240 Allison Homes 
 (Plot 316 Kings Meadow)",Supply and fit,Sales,"1,250.00"
 Ria Wise,13/08/2025,Invoice,13383,"Zimbango, Douglas",2190 Zimbango (part 2),Supply and fit,Sales,350.00
 Ria Wise,14/08/2025,Invoice,13387,"Short, Susan",2244 Short,Supply and fit,Sales,"2,100.00"
@@ -189,7 +191,16 @@ Ria Wise,18/08/2025,Invoice,13385,"Siddat, Eliot & Raeesah",2225 Sidat,Supply an
 Ria Wise,18/08/2025,Invoice,13388,"Ojo, Shade",2211 Ojo,Supply and fit,Sales,190.83
 Michael Bell,19/08/2025,Invoice,13389,"Warrack, Sue",2263 Warrack,Supply and fit,Sales,497.50
 Michael Bell,20/08/2025,Invoice,13390,Dean Oakley,2260 Oakley,Supply and fit,Sales,"1,156.67"
+Ria Wise,21/08/2025,Invoice,13391,"Macallister, Karmen",2226 Macallister,Supply and fit,Sales,"1,193.33"
+Michael Bell,21/08/2025,Invoice,13395,Daniel Hughes,2264 Hughes,Supply and fit,Sales,525.00
+Ria Wise,21/08/2025,Invoice,13397,Liesl Febbraio,2253 Febbraio,Supply and fit,Sales,446.67
+Ria Wise,22/08/2025,Invoice,13393,Tonia Mullally,2255 Mullally,Supply and fit,Sales,716.67
+Michael Bell,22/08/2025,Invoice,13396,"Bowker, John",2258 Bowker,Supply and fit,Sales,673.33
+Ria Wise,23/08/2025,Invoice,13394,Oliver biggs,2265 Biggs,Supply and fit,Sales,"1,433.33"
+Ria Wise,23/08/2025,Invoice,13398,Oj Fasakin,2234 Fasakin,Supply and fit,Sales,"2,796.67"
+Ria Wise,26/08/2025,Invoice,13399,James Boughton,2232 Boughton,Supply and fit,Sales,481.67
+Ria Wise,26/08/2025,Invoice,13400,Jacob Todd,2222 Jones,Supply and fit,Sales,398.33
 
 
 
-" Thursday, August 21, 2025 10:02 AM GMTZ",,,,,,,,
+" Wednesday, August 27, 2025 09:11 AM GMTZ",,,,,,,,
