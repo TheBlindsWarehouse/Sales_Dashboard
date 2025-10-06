@@ -1,6 +1,6 @@
 Sales Report - Dashboard Data,,,,,,,,
 The Blinds Warehouse (t/a NEW HOME BLINDS),,,,,,,,
-"March 1-September 30, 2025",,,,,,,,
+"March 1-October 6, 2025",,,,,,,,
 
 Sales Rep,Transaction date,Transaction type,No.,Customer,Memo/Description,Product/Service,Distribution account,Amount
 Ria Wise,01/03/2025,Invoice,13222,Sebastian Szczakiel,1943 Szczakiel,Supply and fit,Sales,649.17
@@ -245,9 +245,18 @@ Michael Bell,24/09/2025,Invoice,13437,Michael Shaw,2345 Shaw,Supply and fit,Sale
 Ria Wise,26/09/2025,Invoice,13438,Agnese Teuma,2336 Teuma,Supply and fit,Sales,290.83
 Ria Wise,26/09/2025,Invoice,13439,"Kilby, Irene",2023 Kilby,Supply and fit,Sales,434.17
 Ria Wise,26/09/2025,Invoice,13439,"Kilby, Irene",,Discretionary Discount,Discretionary Discounts,-21.67
+Michael Bell,28/09/2025,Invoice,13442,"Shulz, Nicolas",2052 Shulz,Supply and fit,Sales,437.50
+Ria Wise,29/09/2025,Invoice,13443,"Lane, Paul",2346 Lane,Supply and fit,Sales,470.00
+Ria Wise,29/09/2025,Invoice,13445,Kerry Andrews,2333 Andrews (Blinds),Supply and fit,Sales,961.67
+Ria Wise,29/09/2025,Invoice,13445,Kerry Andrews,,Discretionary Discount,Discretionary Discounts,-48.33
+Ria Wise,29/09/2025,Invoice,13446,Kerry Andrews,2333 Andrews (Shutters),Supply and fit - Shutters,Sales - Shutters,"2,066.67"
+Ria Wise,29/09/2025,Invoice,13446,Kerry Andrews,,Discretionary Discount,Discretionary Discounts,-103.33
 Ria Wise,30/09/2025,Invoice,13440,Creid Surfaces,"2301 Creid (1 x Metal venetian, 1 x Perfect fit venetian)",Supply and fit,Sales,295.83
+Ria Wise,30/09/2025,Invoice,13444,Laura Lane,2337 Lane,Supply and fit,Sales,"1,404.17"
+Michael Bell,30/09/2025,Invoice,13447,"Satish, Kavya",2340 Satish,Supply and fit,Sales,655.00
+Michael Bell,30/09/2025,Invoice,13448,"Hackett, Lisa",2330 Hackett,Supply and fit,Sales,448.33
+Ria Wise,30/09/2025,Invoice,13449,"Addae-Manu, Gladys",2348 Addae-Manu,Supply and fit,Sales,405.00
 
 
 
-" Tuesday, September 30, 2025 11:27 AM GMTZ",,,,,,,,
-
+" Monday, October 06, 2025 10:49 AM GMTZ",,,,,,,,
