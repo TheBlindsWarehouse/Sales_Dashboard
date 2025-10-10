@@ -1,6 +1,6 @@
 Sales Report - Dashboard Data,,,,,,,,
 The Blinds Warehouse (t/a NEW HOME BLINDS),,,,,,,,
-"March 1-October 6, 2025",,,,,,,,
+"March 1-October 31, 2025",,,,,,,,
 
 Sales Rep,Transaction date,Transaction type,No.,Customer,Memo/Description,Product/Service,Distribution account,Amount
 Ria Wise,01/03/2025,Invoice,13222,Sebastian Szczakiel,1943 Szczakiel,Supply and fit,Sales,649.17
@@ -223,6 +223,7 @@ Ria Wise,08/09/2025,Invoice,13416,Katie Hipwell,Returning Customer,Discretionary
 Ria Wise,08/09/2025,Invoice,13417,"Martin, Sue",2285 Martin,Supply and fit,Sales,937.50
 Ria Wise,08/09/2025,Invoice,13418,"Short, Susan",2290 Short,Supply and fit,Sales,171.67
 Ria Wise,09/09/2025,Invoice,13419,Kim Roberts,2293 Roberts,Supply and fit,Sales,520.00
+Ria Wise,10/09/2025,Invoice,13421,Lita Freegard,2303 Freegard,Supply and fit - Blind Screen,Sales - Blind Screen,"3,820.83"
 Ria Wise,11/09/2025,Invoice,13423,Musleh Musleh,2291 Musleh,Supply and fit,Sales,666.67
 Ria Wise,11/09/2025,Invoice,13423,Musleh Musleh,,Discretionary Discount,Discretionary Discounts,-33.33
 Ria Wise,12/09/2025,Invoice,13420,Tonia Mullally,2255 Mullally,Supply and fit,Sales,268.33
@@ -235,12 +236,15 @@ Ria Wise,16/09/2025,Invoice,13425,Gleeson Developments Limited,"2294 Gleeson
 (Plot 63 Tulip Fields)
 PO M3117/1377/004",Supply and fit,Sales,765.83
 Ria Wise,16/09/2025,Invoice,13427,"Gamble, Jasmin",2309 Gamble,Supply and fit,Sales,139.17
+Ria Wise,18/09/2025,Invoice,13429,Kelly hard,2323 Hard,Supply and fit - Blind Screen,Sales - Blind Screen,825.00
 Michael Bell,19/09/2025,Invoice,13430,Janet Niddrie,2320 Niddrie,Supply and fit,Sales,"1,005.83"
+Michael Bell,20/09/2025,Invoice,13431,Ray Poolman,2326 Poolman,Supply and fit - Blind Screen,Sales - Blind Screen,"1,333.33"
 Michael Bell,21/09/2025,Invoice,13432,Sarah Ellegaard,2317 Ellegaard,Supply and fit,Sales,"1,104.17"
 Michael Bell,22/09/2025,Invoice,13433,"Cramer, Neville & Liz",2329 Cramer,Supply and fit,Sales,999.17
 Ria Wise,23/09/2025,Invoice,13434,Adam Moore,2278 Moore,Supply and fit,Sales,"1,420.83"
 Ria Wise,23/09/2025,Invoice,13434,Adam Moore,,Discretionary Discount,Discretionary Discounts,-71.67
 Michael Bell,23/09/2025,Invoice,13435,"Ferriday, Janette",2325 Ferriday,Supply and fit,Sales,128.33
+Ria Wise,23/09/2025,Invoice,13451,"Locke, Heather",2332 Locke,Supply and fit,Sales,279.17
 Michael Bell,24/09/2025,Invoice,13437,Michael Shaw,2345 Shaw,Supply and fit,Sales,"1,935.00"
 Ria Wise,26/09/2025,Invoice,13438,Agnese Teuma,2336 Teuma,Supply and fit,Sales,290.83
 Ria Wise,26/09/2025,Invoice,13439,"Kilby, Irene",2023 Kilby,Supply and fit,Sales,434.17
@@ -256,7 +260,9 @@ Ria Wise,30/09/2025,Invoice,13444,Laura Lane,2337 Lane,Supply and fit,Sales,"1,4
 Michael Bell,30/09/2025,Invoice,13447,"Satish, Kavya",2340 Satish,Supply and fit,Sales,655.00
 Michael Bell,30/09/2025,Invoice,13448,"Hackett, Lisa",2330 Hackett,Supply and fit,Sales,448.33
 Ria Wise,30/09/2025,Invoice,13449,"Addae-Manu, Gladys",2348 Addae-Manu,Supply and fit,Sales,405.00
+Ria Wise,30/09/2025,Invoice,13452,Natasha Bond,2319 Bond,Supply and fit,Sales,267.50
+Ria Wise,08/10/2025,Invoice,13450,"Rasheed, Iffat",2357 Iffat,Supply and fit,Sales,"3,833.33"
 
 
 
-" Monday, October 06, 2025 10:49 AM GMTZ",,,,,,,,
+" Friday, October 10, 2025 08:00 AM GMTZ",,,,,,,,
