@@ -1,6 +1,6 @@
 Sales Report - Dashboard Data,,,,,,,,
 The Blinds Warehouse (t/a NEW HOME BLINDS),,,,,,,,
-"March 1-October 31, 2025",,,,,,,,
+"March 1-November 10, 2025",,,,,,,,
 
 Sales Rep,Transaction date,Transaction type,No.,Customer,Memo/Description,Product/Service,Distribution account,Amount
 Ria Wise,01/03/2025,Invoice,13222,Sebastian Szczakiel,1943 Szczakiel,Supply and fit,Sales,649.17
@@ -55,7 +55,7 @@ Michael Bell,29/04/2025,Invoice,13266,Vanessa Sutton,2046 Sutton,Supply and fit,
 Ria Wise,29/04/2025,Invoice,13267,"Howard, Janice",2045 Howard,Supply and fit,Sales,385.00
 Ria Wise,30/04/2025,Invoice,13268,"Gamble, Jasmin",2043 Gamble,Supply and fit,Sales,745.83
 Michael Bell,02/05/2025,Invoice,13269,"Macko, Adriana & Max",2053 Macko,Supply and fit,Sales,"1,100.83"
-Michael Bell,07/05/2025,Invoice,13271,"Shulz, Nicolas",2052 Schulz,Supply and fit,Sales,"1,542.50"
+Michael Bell,07/05/2025,Invoice,13271,"Schulz, Nicolas",2052 Schulz,Supply and fit,Sales,"1,542.50"
 Ria Wise,08/05/2025,Invoice,13270,Eduardo Barum,2054 Barum,Supply and fit,Sales,459.17
 Ria Wise,12/05/2025,Invoice,13272,Graham P Lester,2044 Lester (Awning),Supply and fit,Sales,"3,291.67"
 Ria Wise,12/05/2025,Invoice,13273,Uzochukwu Anastasia Okolo,2030 Okolo (additional blind),Supply and fit,Sales,74.17
@@ -249,7 +249,7 @@ Michael Bell,24/09/2025,Invoice,13437,Michael Shaw,2345 Shaw,Supply and fit,Sale
 Ria Wise,26/09/2025,Invoice,13438,Agnese Teuma,2336 Teuma,Supply and fit,Sales,290.83
 Ria Wise,26/09/2025,Invoice,13439,"Kilby, Irene",2023 Kilby,Supply and fit,Sales,434.17
 Ria Wise,26/09/2025,Invoice,13439,"Kilby, Irene",,Discretionary Discount,Discretionary Discounts,-21.67
-Michael Bell,28/09/2025,Invoice,13442,"Shulz, Nicolas",2052 Shulz,Supply and fit,Sales,437.50
+Michael Bell,28/09/2025,Invoice,13442,"Schulz, Nicolas",2052 Shulz,Supply and fit,Sales,437.50
 Ria Wise,29/09/2025,Invoice,13443,"Lane, Paul",2346 Lane,Supply and fit,Sales,470.00
 Ria Wise,29/09/2025,Invoice,13445,Kerry Andrews,2333 Andrews (Blinds),Supply and fit,Sales,961.67
 Ria Wise,29/09/2025,Invoice,13445,Kerry Andrews,,Discretionary Discount,Discretionary Discounts,-48.33
@@ -261,8 +261,41 @@ Michael Bell,30/09/2025,Invoice,13447,"Satish, Kavya",2340 Satish,Supply and fit
 Michael Bell,30/09/2025,Invoice,13448,"Hackett, Lisa",2330 Hackett,Supply and fit,Sales,448.33
 Ria Wise,30/09/2025,Invoice,13449,"Addae-Manu, Gladys",2348 Addae-Manu,Supply and fit,Sales,405.00
 Ria Wise,30/09/2025,Invoice,13452,Natasha Bond,2319 Bond,Supply and fit,Sales,267.50
+Michael Bell,02/10/2025,Invoice,13453,Emma Zieba,2354 Zieba,Supply and fit,Sales,467.50
+Ria Wise,06/10/2025,Invoice,13455,Timali kharau,2355 Kharau,Supply and fit,Sales,109.17
+Ria Wise,06/10/2025,Invoice,13458,"George, Mandy",2353 George,Supply and fit,Sales,112.50
+Ria Wise,07/10/2025,Invoice,13454,"Harris, Sue",2344 Harris,Supply and fit,Sales,282.50
+Michael Bell,07/10/2025,Invoice,13457,Peter Birch,2362 Birch,Supply and fit,Sales,"1,316.67"
 Ria Wise,08/10/2025,Invoice,13450,"Rasheed, Iffat",2357 Iffat,Supply and fit,Sales,"3,833.33"
+Michael Bell,08/10/2025,Invoice,13456,"Malachowski, Pat & John",2363 Malachowski,Supply and fit,Sales,"2,074.17"
+Michael Bell,08/10/2025,Invoice,13456,"Malachowski, Pat & John",,Discretionary Discount,Discretionary Discounts,-115.83
+Ria Wise,10/10/2025,Invoice,13463,MRS MEGAN LAWLOR,2351 Lawlor (Shutters),Supply and fit - Shutters,Sales - Shutters,"2,494.17"
+Michael Bell,10/10/2025,Invoice,13466,"Bonser, Luke",2342 Bonser,Supply and fit,Sales,"1,383.33"
+Ria Wise,13/10/2025,Invoice,13462,Kurt Connor Sartorius,1956 Sartorius,Supply and fit,Sales,623.33
+Ria Wise,13/10/2025,Invoice,13464,Alison Morgan,2367 Morgan,Supply and fit,Sales,800.00
+Michael Bell,13/10/2025,Invoice,13475,"Josselyn, Jenny",2366 Josselyn,Supply and fit,Sales,"1,171.67"
+Michael Bell,15/10/2025,Invoice,13461,"Pathlavath, Raju",2272 Pathlavath,Supply and fit,Sales,"1,167.50"
+Michael Bell,15/10/2025,Invoice,13461,"Pathlavath, Raju",,Discretionary Discount,Discretionary Discounts,-84.17
+Michael Bell,17/10/2025,Invoice,13459,Dave Henly,Farnborough & Huntingdon Office Blinds,Supply and fit,Sales,"1,822.50"
+Michael Bell,17/10/2025,Invoice,13465,Tendayi Moyo,2368 Moyo,Supply and fit,Sales,"1,624.17"
+Michael Bell,17/10/2025,Invoice,13465,Tendayi Moyo,,Discretionary Discount,Discretionary Discounts,-81.67
+Ria Wise,17/10/2025,Invoice,13468,"White, Annette",2327 White,Supply and fit,Sales,"1,331.67"
+Ria Wise,22/10/2025,Invoice,13460,Rinaldo Fasulo,"2369, 2370, 2372",Supply and fit,Sales,"3,141.67"
+Michael Bell,24/10/2025,Invoice,13470,"Matejkova, Jana",3 x Velux,Supply and fit,Sales,402.90
+Ria Wise,24/10/2025,Invoice,13476,"Mangat, Jess",2379 Mangat,Supply and fit,Sales,365.00
+Michael Bell,25/10/2025,Invoice,13469,"Matejkova, Jana",2382 Matejkova (Perfect Fit Blinds),Supply and fit,Sales,"1,445.00"
+Michael Bell,25/10/2025,Invoice,13469,"Matejkova, Jana",2382 Matejkova (Blind Screen),Supply and fit - Blind Screen,Sales - Blind Screen,357.50
+Michael Bell,25/10/2025,Invoice,13469,"Matejkova, Jana",,Discretionary Discount,Discretionary Discounts,-180.00
+Ria Wise,27/10/2025,Invoice,13467,Nick Bowler,2378 Bowler,Supply and fit,Sales,"1,055.83"
+Ria Wise,27/10/2025,Invoice,13467,Nick Bowler,,Voucher,Promotional Discounts,-22.50
+Michael Bell,28/10/2025,Invoice,13471,Timmith Hill,2389 Hill,Supply and fit,Sales,356.67
+Michael Bell,28/10/2025,Invoice,13471,Timmith Hill,,Discretionary Discount,Discretionary Discounts,-35.83
+Michael Bell,28/10/2025,Invoice,13472,Robert Dudley,2388 Dudley,Supply and fit,Sales,"4,212.50"
+Michael Bell,28/10/2025,Invoice,13473,Irene M Cumming,2386 Cumming,Supply and fit,Sales,"2,863.33"
+Ria Wise,31/10/2025,Invoice,13474,"McKinnon, Caroline",2343 McKinnon,Supply and fit,Sales,404.17
+Ria Wise,31/10/2025,Invoice,13478,"Madhlangobe, Chanelle",2385 Madhlangobe,Supply and fit,Sales,445.00
+Michael Bell,01/11/2025,Invoice,13477,"Guy, Ann",2396 Guy,Supply and fit,Sales,"2,613.33"
 
 
 
-" Friday, October 10, 2025 08:00 AM GMTZ",,,,,,,,
+" Monday, November 10, 2025 10:24 AM GMTZ",,,,,,,,
