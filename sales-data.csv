@@ -1,6 +1,6 @@
 Sales Report - Dashboard Data,,,,,,,,
 The Blinds Warehouse (t/a NEW HOME BLINDS),,,,,,,,
-"March 1-December 12, 2025",,,,,,,,
+"March 1, 2025-January 16, 2026",,,,,,,,
 
 Sales Rep,Transaction date,Transaction type,No.,Customer,Memo/Description,Product/Service,Distribution account,Amount
 Ria Wise,01/03/2025,Invoice,13222,Sebastian Szczakiel,1943 Szczakiel,Supply and fit,Sales,649.17
@@ -296,7 +296,7 @@ Michael Bell,28/10/2025,Invoice,13473,Irene M Cumming,2386 Cumming,Supply and fi
 Ria Wise,31/10/2025,Invoice,13474,"McKinnon, Caroline",2343 McKinnon,Supply and fit,Sales,404.17
 Ria Wise,31/10/2025,Invoice,13478,"Madhlangobe, Chanelle",2385 Madhlangobe,Supply and fit,Sales,445.00
 Michael Bell,01/11/2025,Invoice,13477,"Guy, Ann",2396 Guy,Supply and fit,Sales,"2,613.33"
-Michael Bell,01/11/2025,Invoice,13485,"Morgan, Caroline & Luke",2365 Morgan,Supply and fit,Sales,464.17
+Michael Bell,01/11/2025,Invoice,13485,Caroline & Luke Morgan,2365 Morgan,Supply and fit,Sales,464.17
 Ria Wise,02/11/2025,Invoice,13511,Alison Morgan,2447 Morgan,Supply and fit,Sales,112.50
 Ria Wise,04/11/2025,Invoice,13499,Lorna Stockdale,2399 Stockdale,Supply and fit,Sales,"1,208.33"
 Ria Wise,04/11/2025,Invoice,13510,Adrian swiatkowski,2444 Swiatkowski,Supply and fit,Sales,908.33
@@ -338,11 +338,22 @@ Ria Wise,29/11/2025,Invoice,13508,Deborah Sam,2437 Sam,Supply and fit,Sales,379.
 Michael Bell,03/12/2025,Invoice,13506,Mary Hart,2306 Hart,Supply and fit,Sales,630.00
 Michael Bell,03/12/2025,Invoice,13512,Annabel Blake,2450 Blake,Supply and fit,Sales,"1,016.67"
 Michael Bell,03/12/2025,Invoice,13512,Annabel Blake,,Discretionary Discount,Discretionary Discounts,-152.50
-Ria Wise,04/12/2025,Invoice,13505,Stella Ikudaayisi,,Supply and fit,Sales,"2,685.00"
-Ria Wise,04/12/2025,Invoice,13505,Stella Ikudaayisi,,Discretionary Discount,Discretionary Discounts,-135.83
+Ria Wise,04/12/2025,Invoice,13505,Stella Ikudaayisi,,Supply and fit,Sales,"1,488.33"
+Ria Wise,04/12/2025,Invoice,13505,Stella Ikudaayisi,,Discretionary Discount,Discretionary Discounts,-73.58
 Michael Bell,05/12/2025,Invoice,13513,"Gentile, Tony",2454 Gentile,Supply and fit,Sales,333.33
 Ria Wise,08/12/2025,Invoice,13507,Michael Machumi,2395 Madrummi,Supply and fit,Sales,641.67
+Ria Wise,09/12/2025,Invoice,13517,"Batchford, Alan",2458 Batchford,Supply and fit,Sales,412.50
+Ria Wise,12/12/2025,Invoice,13518,"Warrack, Sue",2461 Warrack,Supply and fit,Sales,375.00
+Ria Wise,15/12/2025,Invoice,13516,"Rothbarth, Arnold",2463 Rothbart,Supply and fit,Sales,711.67
+Ria Wise,04/01/2026,Invoice,13519,Paul Jones,2467 Jones,Supply and fit,Sales,"2,616.67"
+Michael Bell,05/01/2026,Invoice,13523,Tim Tottles,2472 Tottles,Supply and fit,Sales,410.83
+Michael Bell,05/01/2026,Invoice,13524,Melissa Harvey,2470 Harvey,Supply and fit,Sales,323.33
+Ria Wise,06/01/2026,Invoice,13525,"Obajemu, Emmanuel",2465 Obajemu,Supply and fit,Sales,"1,875.00"
+Ria Wise,07/01/2026,Invoice,13520,Daren Skeggs,2471 Skeggs,Supply and fit - Blind Screen,Sales - Blind Screen,274.17
+Ria Wise,12/01/2026,Invoice,13521,Omar Mahmood,Replacement Headrail,Supply and fit,Sales,83.33
+Ria Wise,13/01/2026,Invoice,13522,"Madhlangobe, Chanelle",2477 Madhlangobe,Supply and fit,Sales,171.67
+Ria Wise,13/01/2026,Invoice,13522,"Madhlangobe, Chanelle",,Discretionary Discount,Discretionary Discounts,-9.17
 
 
 
-" Friday, December 12, 2025 12:33 PM GMT+01:00",,,,,,,,
+" Friday, January 16, 2026 10:03 AM GMTZ",,,,,,,,
